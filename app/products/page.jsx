@@ -35,7 +35,6 @@ function Products() {
     buyPrice: "",
     sellPrice: "",
     quantity: "",
-    owner: ""
   });
 
   useEffect(() => {
@@ -90,7 +89,7 @@ function Products() {
   const handleAddProduct = async () => {
     const shop = localStorage.getItem("shop");
 
-    if (!form.name || !form.buyPrice || !form.sellPrice || !form.quantity || !form.owner) {
+    if (!form.name || !form.buyPrice || !form.sellPrice || !form.quantity) {
       alert("❗️يرجى ملء جميع الحقول المطلوبة");
       return;
     }
@@ -103,7 +102,6 @@ function Products() {
       buyPrice: Number(form.buyPrice),
       sellPrice: Number(form.sellPrice),
       quantity: Number(form.quantity),
-      owner: form.owner,
       date: Timestamp.now(),
       shop: shop,
       userEmail: localStorage.getItem('email'),
@@ -111,7 +109,7 @@ function Products() {
     });
 
     alert("✅ تم إضافة المنتج");
-    setForm({ name: "", buyPrice: "", sellPrice: "", quantity: "", owner: "" });
+    setForm({ name: "", buyPrice: "", sellPrice: "", quantity: ""});
   };
 
   const handleDelete = async (id) => {
@@ -201,7 +199,6 @@ function Products() {
                   <th>سعر الشراء</th>
                   <th>سعر البيع</th>
                   <th>الكمية</th>
-                  <th>المورد</th>
                   <th>التاريخ</th>
                   <th>حذف</th>
                   <th>طباعة</th>
@@ -215,7 +212,6 @@ function Products() {
                     <td>{product.buyPrice} EGP</td>
                     <td>{product.sellPrice} EGP</td>
                     <td>{product.quantity}</td>
-                    <td>{product.owner}</td>
                     <td>{product.date?.toDate().toLocaleDateString("ar-EG")}</td>
                     <td>
                       <button className={styles.delBtn} onClick={() => handleDelete(product.id)}>
@@ -249,7 +245,6 @@ function Products() {
                   <strong>سعر الشراء: {product.buyPrice} EGP</strong>
                   <strong>سعر البيع: {product.sellPrice} EGP</strong>
                   <strong>الكمية: {product.quantity}</strong>
-                  <strong>المورد: {product.owner}</strong>
                   <strong>التاريخ: {product.date?.toDate().toLocaleDateString("ar-EG")}</strong>
                 </div>
               </div>
@@ -299,17 +294,6 @@ function Products() {
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
               />
-            </div>
-            <div className="inputContainer">
-              <label><MdOutlinePersonOutline /></label>
-              <select
-                value={form.owner}
-                onChange={(e) => setForm({ ...form, owner: e.target.value })}
-              >
-                <option value="">اختر المورد</option>
-                <option value="العنتري">العنتري</option>
-                <option value="الحرازي">الحرازي</option>
-              </select>
             </div>
           </div>
           <button className={styles.addBtn} onClick={handleAddProduct}>

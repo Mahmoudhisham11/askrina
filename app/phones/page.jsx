@@ -1,8 +1,8 @@
 'use client';
+import JsBarcode from "jsbarcode";
 import SideBar from "@/components/SideBar/page";
 import styles from "./styles.module.css";
-import { useState, useEffect } from "react";
-import { FaBarcode } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { GiMoneyStack } from "react-icons/gi";
 import { CiSearch } from "react-icons/ci";
@@ -132,43 +132,70 @@ function Phones() {
     }
   };
 
-  const handlePrintLabel = (product) => {
-    const printWindow = window.open('', '', 'width=300,height=200');
-    const htmlContent = `
-      <html>
-        <head>
-          <style>
-            @media print {
-              body { margin: 0; padding: 0; }
-            }
-            .label {
-              width: 5cm;
-              height: 3cm;
-              padding: 10px;
-              font-size: 14px;
-              font-family: Arial, sans-serif;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              border: 1px dashed #000;
-              box-sizing: border-box;
-            }
-          </style>
-        </head>
-        <body onload="setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 300);">
-          <div class="label">
-            <div><strong>اسم المنتج:</strong> ${product.name}</div>
-            <div><strong> B :</strong> ${product.battery}</div>
-            <div><strong> S :</strong> ${product.storage}</div>
-            <div><strong>الكود:</strong> ${product.code}</div>
-          </div>
-        </body>
-      </html>
-    `;
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-  };
+
+const handlePrintLabel = (product) => {
+  // افتح نافذة جديدة للطباعة
+  const printWindow = window.open('', '', 'width=300,height=200');
+
+  const htmlContent = `
+    <html>
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+        <style>
+          @media print {
+            body { margin: 0; padding: 0; }
+          }
+          .label {
+            width: 5cm;
+            height: 3cm;
+            padding: 10px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #000;
+            box-sizing: border-box;
+          }
+          .barcode {
+            margin-top: 5px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="label">
+          <div><strong>اسم المنتج:</strong> ${product.name}</div>
+          <div><strong>B:</strong> ${product.battery}</div>
+          <div><strong>S:</strong> ${product.storage}</div>
+          <div><strong>الكود:</strong> ${product.code}</div>
+          <svg id="barcode" class="barcode"></svg>
+        </div>
+
+        <script>
+          // انتظر DOM يجهز وبعدين اطبع
+          window.onload = function () {
+            JsBarcode("#barcode", "${product.code}", {
+              format: "CODE128",
+              displayValue: false,
+              width: 2,
+              height: 40
+            });
+
+            setTimeout(() => {
+              window.print();
+              setTimeout(() => window.close(), 500);
+            }, 500);
+          };
+        </script>
+      </body>
+    </html>
+  `;
+
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+};
+
 
   const handleEdit = (product) => {
     setOpenEdit(true);

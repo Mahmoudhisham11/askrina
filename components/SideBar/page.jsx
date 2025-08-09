@@ -11,6 +11,7 @@ import { GoGear } from "react-icons/go";
 import { BiLogOutCircle } from "react-icons/bi";
 import { TbReportSearch } from "react-icons/tb";
 import { TbReportMoney } from "react-icons/tb";
+import { IoPersonSharp } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 
 function SideBar({openSideBar, setOpenSideBar}) {
@@ -43,9 +44,13 @@ function SideBar({openSideBar, setOpenSideBar}) {
                     <span><HiOutlineWallet/></span>
                     <span>المنتجات</span>
                 </Link>
-                <Link href={'https://cashat.netlify.app/'} className={styles.actionLinks}>
+                <Link href={'/masrofat'} className={styles.actionLinks}>
                     <span><TbMoneybag/></span>
-                    <span>الكاش</span>
+                    <span>المصاريف</span>
+                </Link>
+                <Link href={'/employees'} className={styles.actionLinks}>
+                    <span><IoPersonSharp/></span>
+                    <span>الموظفين</span>
                 </Link>
                 <Link href={'/debts'} className={styles.actionLinks}>
                     <span><TbReportMoney/></span>

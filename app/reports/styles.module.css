@@ -12,6 +12,12 @@
     flex-direction: column;
     gap: 20px;
 }
+.filterBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
 .delBtn {
     border: none;
     background-color: transparent;

@@ -17,6 +17,8 @@ import { db } from "@/app/firebase";
 function Main() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [employess, setEmployess] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const [savePage, setSavePage] = useState(false)
   const [openSideBar, setOpenSideBar] = useState(false)
   const [customPrices, setCustomPrices] = useState({});
@@ -45,6 +47,14 @@ function Main() {
     });
     return () => unsubscribe();
   }, [shop]);
+  useEffect(() => {
+    const q = query(collection(db, 'employees'))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}))
+      setEmployess(data)
+    })
+    return () => unsubscribe
+  }, [])
 
 const handleAddToCart = async (product) => {
   const customPrice = Number(customPrices[product.id]);
@@ -54,9 +64,16 @@ const handleAddToCart = async (product) => {
     name: product.name,
     sellPrice: finalPrice,
     productPrice: product.sellPrice,
+    buyPrice: product.buyPrice,
     serial: product.serial || 0,
     code: product.code,
-    owner: product.owner, // ✅ أضف الكود هنا
+    battery: product.battery || 0,
+    storage: product.storage || 0,
+    color: product.color || 0,
+    box: product.box || 0,
+    condition: product.condition || 0,
+    sim: product.sim || 0,
+    tax: product.tax || 0,
     quantity: 1,
     type: product.type,
     total: finalPrice,
@@ -101,80 +118,77 @@ const handleAddToCart = async (product) => {
 
   const phonesCount = products.filter(p => p.type === "phone").length;
   const otherCount = products.filter(p => p.type !== "phone").length;
+  const handleSaveReport = async () => {
+    const clientName = nameRef.current.value;
+    const phone = phoneRef.current.value;
 
-const handleSaveReport = async () => {
-  const clientName = nameRef.current.value;
-  const phone = phoneRef.current.value;
+    if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "" || !selectedEmployee) {
+      alert("يرجى ملء جميع الحقول، اختيار الموظف، وإضافة منتجات إلى السلة");
+      return;
+    }
 
-  if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "") {
-    alert("يرجى ملء جميع الحقول وإضافة منتجات إلى السلة");
-    return;
-  }
+    try {
+      for (const item of cart) {
+        const q = query(
+          collection(db, "products"),
+          where("code", "==", item.code),
+          where("shop", "==", shop)
+        );
+        const snapshot = await getDocs(q);
 
-  try {
-    for (const item of cart) {
-      const q = query(
-        collection(db, "products"),
-        where("code", "==", item.code),
-        where("shop", "==", shop)
-      );
-      const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const productDoc = snapshot.docs[0];
+          const productData = productDoc.data();
+          const productRef = productDoc.ref;
 
-      if (!snapshot.empty) {
-        const productDoc = snapshot.docs[0];
-        const productData = productDoc.data();
-        const productRef = productDoc.ref;
+          const availableQty = productData.quantity || 0;
+          const sellQty = item.quantity;
 
-        const availableQty = productData.quantity || 0;
-        const sellQty = item.quantity;
-
-        if (sellQty > availableQty) {
-          alert(`الكمية غير كافية للمنتج: ${item.name}`);
-          return;
-        } else if (sellQty === availableQty) {
-          await deleteDoc(productRef); // حذف المنتج لو الكمية خلصت
-        } else {
-          await updateDoc(productRef, {
-            quantity: availableQty - sellQty, // خصم الكمية
-          });
+          if (sellQty > availableQty) {
+            alert(`الكمية غير كافية للمنتج: ${item.name}`);
+            return;
+          } else if (sellQty === availableQty) {
+            await deleteDoc(productRef);
+          } else {
+            await updateDoc(productRef, {
+              quantity: availableQty - sellQty,
+            });
+          }
         }
       }
+
+      const total = cart.reduce((sum, item) => sum + item.total, 0);
+
+      const saleData = {
+        cart,
+        clientName,
+        phone,
+        total,
+        date: new Date(),
+        shop,
+        employee: selectedEmployee,
+      };
+
+      // حفظ التقرير العام
+      await addDoc(collection(db, "reports"), saleData);
+
+      // حفظ تقرير الموظف بدون عمولة
+      await addDoc(collection(db, "employeesReports"), saleData);
+
+      // حذف السلة
+      const cartSnapshot = await getDocs(collection(db, "cart"));
+      for (const doc of cartSnapshot.docs) {
+        await deleteDoc(doc.ref);
+      }
+
+      alert("تم حفظ التقرير بنجاح");
+    } catch (error) {
+      console.error("حدث خطأ أثناء حفظ التقرير:", error);
+      alert("حدث خطأ أثناء حفظ التقرير");
     }
 
-    // حساب إجمالي الفاتورة
-    const total = cart.reduce((sum, item) => sum + item.total, 0);
-
-    // حفظ التقرير
-    await addDoc(collection(db, "reports"), {
-      cart,
-      clientName,
-      phone,
-      total,
-      date: new Date(),
-      shop,
-    });
-
-    // حذف كل عناصر السلة
-    const cartSnapshot = await getDocs(collection(db, "cart"));
-    for (const doc of cartSnapshot.docs) {
-      await deleteDoc(doc.ref);
-    }
-
-    alert("تم حفظ التقرير بنجاح");
-  } catch (error) {
-    console.error("حدث خطأ أثناء حفظ التقرير:", error);
-    alert("حدث خطأ أثناء حفظ التقرير");
-  }
-  setSavePage(false)
-};
-
-
-
-
-
-
-
-
+    setSavePage(false);
+  };
 
   return (
     <div className={styles.mainContainer}>
@@ -192,6 +206,19 @@ const handleSaveReport = async () => {
           <div className="inputContainer">
             <label htmlFor=""><FaPhone/></label>
             <input ref={phoneRef} type="text" placeholder="رقم الهاتف"/>
+          </div>
+          <div className="inputContainer">
+            <select
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+            >
+              <option value="">اختر موظف</option>
+              {employess.map((employe) => (
+                <option key={employe.id} value={employe.name}>
+                  {employe.name}
+                </option>
+              ))}
+            </select>
           </div>
           <button onClick={handleSaveReport}>تقفيل البيعة</button>
         </div>
