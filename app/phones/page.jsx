@@ -134,7 +134,6 @@ function Phones() {
 
 
 const handlePrintLabel = (product) => {
-  // افتح نافذة جديدة للطباعة
   const printWindow = window.open('', '', 'width=300,height=200');
 
   const htmlContent = `
@@ -142,50 +141,61 @@ const handlePrintLabel = (product) => {
       <head>
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
-          @media print {
-            body { margin: 0; padding: 0; }
+          @page {
+            size: 50mm 30mm; /* مقاس الاستيكر */
+            margin: 0; /* بدون هوامش */
+          }
+          body {
+            margin: 0;
+            padding: 0;
           }
           .label {
-            width: 5cm;
-            height: 3cm;
-            padding: 10px;
-            font-size: 14px;
+            width: 50mm;
+            height: 30mm;
+            font-size: 10pt;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 1px dashed #000;
             box-sizing: border-box;
           }
-          .barcode {
-            margin-top: 5px;
+          .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            font-size: 9pt;
+          }
+          svg.barcode {
+            margin-top: 2px;
           }
         </style>
       </head>
       <body>
         <div class="label">
-          <div><strong>اسم المنتج:</strong> ${product.name}</div>
-          <div><strong>B:</strong> ${product.battery}</div>
-          <div><strong>S:</strong> ${product.storage}</div>
-          <div><strong>الكود:</strong> ${product.code}</div>
+          <div>${product.name}</div>
+          <div class="content">
+            <div><strong>B:</strong> ${product.battery} /</div>
+            <div><strong>S:</strong> ${product.storage} /</div>
+            <div><strong>C:</strong> ${product.code}</div>
+          </div>
           <svg id="barcode" class="barcode"></svg>
         </div>
 
         <script>
-          // انتظر DOM يجهز وبعدين اطبع
           window.onload = function () {
             JsBarcode("#barcode", "${product.code}", {
               format: "CODE128",
               displayValue: false,
-              width: 2,
-              height: 40
+              width: 1.5, /* عرض كل خط في الباركود */
+              height: 20   /* ارتفاع الباركود بالملم */
             });
 
             setTimeout(() => {
               window.print();
               setTimeout(() => window.close(), 500);
-            }, 500);
+            }, 300);
           };
         </script>
       </body>
@@ -195,6 +205,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
   const handleEdit = (product) => {

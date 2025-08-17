@@ -21,11 +21,12 @@ function Main() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [savePage, setSavePage] = useState(false)
   const [openSideBar, setOpenSideBar] = useState(false)
+  const [isSaving, setIsSaving] = useState(false);
   const [customPrices, setCustomPrices] = useState({});
   const [searchCode, setSearchCode] = useState("");
   const [filterType, setFilterType] = useState("all");
   const nameRef = useRef();
-  const phoneRef = useRef();
+  const phoneRef = useRef();  
   const shop = typeof window !== "undefined" ? localStorage.getItem("shop") : "";
 
   useEffect(() => {
@@ -47,6 +48,32 @@ function Main() {
     });
     return () => unsubscribe();
   }, [shop]);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storageUserName = localStorage.getItem("userName");
+      if (!storageUserName) return;
+
+      const q = query(
+        collection(db, 'snadUsers'),
+        where('userName', '==', storageUserName)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapShot) => {
+        if (snapShot.empty) return;
+
+        const data = snapShot.docs[0].data();
+        if (data.isSubscribed === false) {
+          alert('لقد تم اغلاق الحساب برجاء التواصل مع المطور');
+          localStorage.clear();
+          window.location.reload();
+        }
+      });
+
+      return () => unsubscribe();
+    }
+}, []);
+
   useEffect(() => {
     const q = query(collection(db, 'employees'))
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -56,37 +83,36 @@ function Main() {
     return () => unsubscribe
   }, [])
 
-const handleAddToCart = async (product) => {
-  const customPrice = Number(customPrices[product.id]);
-  const finalPrice = !isNaN(customPrice) && customPrice > 0 ? customPrice : product.sellPrice;
+  const handleAddToCart = async (product) => {
+      const customPrice = Number(customPrices[product.id]);
+      const finalPrice = !isNaN(customPrice) && customPrice > 0 ? customPrice : product.sellPrice;
+      await addDoc(collection(db, "cart"), {
+        name: product.name,
+        sellPrice: finalPrice,
+        productPrice: product.sellPrice,
+        buyPrice: product.buyPrice,
+        serial: product.serial || 0,
+        code: product.code,
+        battery: product.battery || 0,
+        storage: product.storage || 0,
+        color: product.color || 0,
+        box: product.box || 0,
+        condition: product.condition || 0,
+        sim: product.sim || 0,
+        tax: product.tax || 0,
+        quantity: 1,
+        type: product.type,
+        total: finalPrice,
+        date: new Date(),
+        shop: shop,
+      });
 
-  await addDoc(collection(db, "cart"), {
-    name: product.name,
-    sellPrice: finalPrice,
-    productPrice: product.sellPrice,
-    buyPrice: product.buyPrice,
-    serial: product.serial || 0,
-    code: product.code,
-    battery: product.battery || 0,
-    storage: product.storage || 0,
-    color: product.color || 0,
-    box: product.box || 0,
-    condition: product.condition || 0,
-    sim: product.sim || 0,
-    tax: product.tax || 0,
-    quantity: 1,
-    type: product.type,
-    total: finalPrice,
-    date: new Date(),
-    shop: shop,
-  });
-
-  setCustomPrices(prev => {
-    const updated = { ...prev };
-    delete updated[product.id];
-    return updated;
-  });
-};
+      setCustomPrices(prev => {
+        const updated = { ...prev };
+        delete updated[product.id];
+        return updated;
+      });
+  };
 
 
   const handleQtyChange = async (cartItem, delta) => {
@@ -119,11 +145,15 @@ const handleAddToCart = async (product) => {
   const phonesCount = products.filter(p => p.type === "phone").length;
   const otherCount = products.filter(p => p.type !== "phone").length;
   const handleSaveReport = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+
     const clientName = nameRef.current.value;
     const phone = phoneRef.current.value;
 
     if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "" || !selectedEmployee) {
       alert("يرجى ملء جميع الحقول، اختيار الموظف، وإضافة منتجات إلى السلة");
+      setIsSaving(false); // إعادة فتح الزرار لو فيه خطأ
       return;
     }
 
@@ -146,6 +176,7 @@ const handleAddToCart = async (product) => {
 
           if (sellQty > availableQty) {
             alert(`الكمية غير كافية للمنتج: ${item.name}`);
+            setIsSaving(false); // إعادة فتح الزرار
             return;
           } else if (sellQty === availableQty) {
             await deleteDoc(productRef);
@@ -157,38 +188,36 @@ const handleAddToCart = async (product) => {
         }
       }
 
-      const total = cart.reduce((sum, item) => sum + item.total, 0);
+    const total = cart.reduce((sum, item) => sum + item.total, 0);
 
-      const saleData = {
-        cart,
-        clientName,
-        phone,
-        total,
-        date: new Date(),
-        shop,
-        employee: selectedEmployee,
-      };
+    const saleData = {
+      cart,
+      clientName,
+      phone,
+      total,
+      date: new Date(),
+      shop,
+      employee: selectedEmployee,
+    };
 
-      // حفظ التقرير العام
-      await addDoc(collection(db, "reports"), saleData);
+    await addDoc(collection(db, "reports"), saleData);
+    await addDoc(collection(db, "employeesReports"), saleData);
 
-      // حفظ تقرير الموظف بدون عمولة
-      await addDoc(collection(db, "employeesReports"), saleData);
-
-      // حذف السلة
-      const cartSnapshot = await getDocs(collection(db, "cart"));
-      for (const doc of cartSnapshot.docs) {
-        await deleteDoc(doc.ref);
-      }
-
-      alert("تم حفظ التقرير بنجاح");
-    } catch (error) {
-      console.error("حدث خطأ أثناء حفظ التقرير:", error);
-      alert("حدث خطأ أثناء حفظ التقرير");
+    const cartSnapshot = await getDocs(collection(db, "cart"));
+    for (const doc of cartSnapshot.docs) {
+      await deleteDoc(doc.ref);
     }
 
-    setSavePage(false);
-  };
+    alert("تم حفظ التقرير بنجاح");
+  } catch (error) {
+    console.error("حدث خطأ أثناء حفظ التقرير:", error);
+    alert("حدث خطأ أثناء حفظ التقرير");
+  }
+
+  setIsSaving(false); // إعادة فتح الزرار
+  setSavePage(false);
+};
+
 
   return (
     <div className={styles.mainContainer}>
@@ -220,7 +249,10 @@ const handleAddToCart = async (product) => {
               ))}
             </select>
           </div>
-          <button onClick={handleSaveReport}>تقفيل البيعة</button>
+          <button onClick={handleSaveReport} disabled={isSaving}>
+            {isSaving ? "جارٍ الحفظ..." : "حفظ العملية"}
+          </button>
+
         </div>
       </div>
 
@@ -291,6 +323,7 @@ const handleAddToCart = async (product) => {
                         <th>السعر</th>
                         <th>السعر</th>
                         <th>السريال</th>
+                        <th>الكمية</th>
                         <th className={styles.lastRow}>تحديد</th>
                         <th className={styles.lastRow}>تفاعل</th>
                     </tr>
@@ -301,7 +334,8 @@ const handleAddToCart = async (product) => {
                         <td className={styles.lastRow}>{product.code}</td>
                         <td>{product.name}</td>
                         <td>{product.sellPrice} EGP</td>
-                        <td>{product.serial}</td>
+                        <td>{product.serial || "-"}</td>
+                        <td>{product.quantity}</td>
                         <td  className={styles.lastRow}>
                           <input
                           type="number"

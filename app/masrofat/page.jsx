@@ -26,7 +26,7 @@ function Masrofat() {
                 setMasrofatList(data);
             });
     
-            return () => unsub(); // لإلغاء الاشتراك عند إغلاق الصفحة
+            return () => unsub(); 
         }
     }, []);
 

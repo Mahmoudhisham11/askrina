@@ -24,6 +24,7 @@ function Reports() {
     const [reports, setReports] = useState([]);
     const [openCard, setOpenCard] = useState(null);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);            
     const shop = typeof window !== "undefined" ? localStorage.getItem("shop") : "";
 
     useEffect(() => {
@@ -78,79 +79,88 @@ function Reports() {
         return () => unsubscribe();
     }, [fromDate, toDate, filterType, shop]);
 
-    const handleDeleteSingleProduct = async (reportId, productCode) => {
-        try {
-            const reportRef = doc(db, 'reports', reportId);
-            const reportSnap = await getDoc(reportRef);
 
-            if (!reportSnap.exists()) {
-                alert("هذا التقرير غير موجود");
-                return;
-            }
+const handleDeleteSingleProduct = async (reportId, productCode) => {
+    if (isDeleting) return; // منع التكرار
+    setIsDeleting(true);
 
-            const reportData = reportSnap.data();
-            const cartItems = reportData.cart;
-            const shop = reportData.shop;
+    try {
+        const reportRef = doc(db, 'reports', reportId);
+        const reportSnap = await getDoc(reportRef);
 
-            const updatedCart = cartItems.filter((item) => item.code !== productCode);
-            const deletedItem = cartItems.find((item) => item.code === productCode);
-
-            if (!deletedItem) {
-                alert("هذا المنتج غير موجود في التقرير");
-                return;
-            }
-
-            const q = query(
-                collection(db, "products"),
-                where("code", "==", deletedItem.code),
-                where("shop", "==", shop)
-            );
-
-            const snapshot = await getDocs(q);
-
-            if (!snapshot.empty) {
-                const productDoc = snapshot.docs[0];
-                const currentQty = productDoc.data().quantity || 0;
-
-                await updateDoc(productDoc.ref, {
-                    quantity: currentQty + deletedItem.quantity,
-                });
-            } else {
-                await addDoc(collection(db, "products"), {
-                    name: deletedItem.name ?? "بدون اسم",
-                    code: deletedItem.code ?? 0,
-                    serial: deletedItem.serial ?? 0,
-                    sellPrice: deletedItem.sellPrice ?? deletedItem.price ?? 0,
-                    buyPrice: deletedItem.buyPrice,
-                    type: deletedItem.type ?? "product",
-                    sim: deletedItem.sim || 0,
-                    battery: deletedItem.battery || 0,
-                    storage: deletedItem.storage || 0,
-                    color: deletedItem.color || 0,
-                    box: deletedItem.box || 0,
-                    condition: deletedItem.condition || 0,
-                    tax: deletedItem.tax || 0,
-                    quantity: deletedItem.quantity,
-                    date: new Date(),
-                    shop: deletedItem.shop ?? shop,
-                });
-            }
-
-            if (updatedCart.length === 0) {
-                await deleteDoc(reportRef);
-                alert("تم حذف التقرير لأنه لم يتبق فيه منتجات");
-            } else {
-                await updateDoc(reportRef, {
-                    cart: updatedCart,
-                });
-                alert("تم حذف المنتج من التقرير واسترجاعه إلى المخزون");
-            }
-
-        } catch (error) {
-            console.error("خطأ أثناء الحذف:", error);
-            alert("حدث خطأ أثناء حذف المنتج");
+        if (!reportSnap.exists()) {
+            alert("هذا التقرير غير موجود");
+            setIsDeleting(false);
+            return;
         }
-    };
+
+        const reportData = reportSnap.data();
+        const cartItems = reportData.cart;
+        const shop = reportData.shop;
+
+        const updatedCart = cartItems.filter((item) => item.code !== productCode);
+        const deletedItem = cartItems.find((item) => item.code === productCode);
+
+        if (!deletedItem) {
+            alert("هذا المنتج غير موجود في التقرير");
+            setIsDeleting(false);
+            return;
+        }
+
+        const q = query(
+            collection(db, "products"),
+            where("code", "==", deletedItem.code),
+            where("shop", "==", shop)
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+            const productDoc = snapshot.docs[0];
+            const currentQty = productDoc.data().quantity || 0;
+
+            await updateDoc(productDoc.ref, {
+                quantity: currentQty + deletedItem.quantity,
+            });
+        } else {
+            await addDoc(collection(db, "products"), {
+                name: deletedItem.name ?? "بدون اسم",
+                code: deletedItem.code ?? 0,
+                serial: deletedItem.serial ?? 0,
+                sellPrice: deletedItem.sellPrice ?? deletedItem.price ?? 0,
+                buyPrice: deletedItem.buyPrice,
+                type: deletedItem.type ?? "product",
+                sim: deletedItem.sim || 0,
+                battery: deletedItem.battery || 0,
+                storage: deletedItem.storage || 0,
+                color: deletedItem.color || 0,
+                box: deletedItem.box || 0,
+                condition: deletedItem.condition || 0,
+                tax: deletedItem.tax || 0,
+                quantity: deletedItem.quantity,
+                date: new Date(),
+                shop: deletedItem.shop ?? shop,
+            });
+        }
+
+        if (updatedCart.length === 0) {
+            await deleteDoc(reportRef);
+            alert("تم حذف التقرير لأنه لم يتبق فيه منتجات");
+        } else {
+            await updateDoc(reportRef, {
+                cart: updatedCart,
+            });
+            alert("تم حذف المنتج من التقرير واسترجاعه إلى المخزون");
+        }
+
+    } catch (error) {
+        console.error("خطأ أثناء الحذف:", error);
+        alert("حدث خطأ أثناء حذف المنتج");
+    }
+
+    setIsDeleting(false);
+};
+
 
     return (
         <div className={styles.reports}>

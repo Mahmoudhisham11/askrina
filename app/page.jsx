@@ -8,8 +8,8 @@ export default function Home() {
 
   useEffect(() => {
     if(typeof window !== "undefined") {
-      const storageEmail = localStorage.getItem("email")
-      if(storageEmail) {
+      const storageUserName = localStorage.getItem("userName")
+      if(storageUserName) {
         setlogin(true)
       }else {
         setlogin(false)

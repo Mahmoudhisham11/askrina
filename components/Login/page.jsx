@@ -13,7 +13,6 @@ import { IoStorefrontOutline } from "react-icons/io5";
 function Login() {
     const [creat, setCreat] = useState(false)
     const [userName, setUserName] = useState('')
-    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [shop, setShop] = useState('')
     
@@ -26,23 +25,18 @@ function Login() {
             alert("يجب ادخال كلمة المرور")
             return
         }
-        if(!email) {
-            alert("يجب ادخال البريد الالكتروني ")
-            return
-        }
-        const q = query(collection(db, 'snadUsers'), where('emial', '==', email))
+        const q = query(collection(db, 'snadUsers'), where('userName', '==', userName))
         const querySnapshot = await getDocs(q)
         if(querySnapshot.empty) {
             await addDoc(collection(db, 'snadUsers'), {
                 userName,
                  password, 
-                 email,
-                 shop
+                 shop,
+                 isSubscribed: false
                 })
             alert("تم انشاء حساب للمستخدم")
             setUserName('')
             setPassword('')
-            setEmail('')
             setShop('')
         }else {
             alert('المستخدم موجود بالفعل')
@@ -50,7 +44,7 @@ function Login() {
     }
 
     const handleLogin = async() => {
-        const q = query(collection(db, 'snadUsers'), where('email', '==', email))
+        const q = query(collection(db, 'snadUsers'), where('userName', '==', userName))
         const querySnapshot = await getDocs(q)
         if(querySnapshot.empty) {
             alert('اسم المستخدم غير صحيح')
@@ -60,11 +54,14 @@ function Login() {
             if(userData.password !== password) {
                 alert("كلمة المرور غير صحيحة")
             }else {
-                if(typeof window !== 'undefinde') {
-                    localStorage.setItem('userName', userData.userName)
-                    localStorage.setItem('email', email)
-                    localStorage.setItem('shop', shop)
-                    window.location.reload()
+                if(userData.isSubscribed === false) {
+                    alert('يجب تفعيل البرنامج اولا برجاء التواصل مع المطور')
+                }else {
+                    if(typeof window !== 'undefinde') {
+                        localStorage.setItem('userName', userData.userName)
+                        localStorage.setItem('shop', shop)
+                        window.location.reload()
+                    }
                 }
             }
         }
@@ -84,8 +81,8 @@ function Login() {
                 </div>
                 <div className={styles.inputs}>
                     <div className="inputContainer">
-                        <label><CiMail/></label>
-                        <input type="email" placeholder="البريد الالكتروني" onChange={(e) => setEmail(e.target.value)}/>
+                        <label><MdDriveFileRenameOutline/></label>
+                        <input type="text" value={userName} placeholder="اسم المستخدم" onChange={(e) => setUserName(e.target.value)}/>
                     </div>
                     <div className="inputContainer">
                         <label><CiLock/></label>
@@ -106,11 +103,7 @@ function Login() {
                 <div className={styles.inputs}>
                     <div className="inputContainer">
                         <label><MdDriveFileRenameOutline/></label>
-                        <input type="email" value={userName} placeholder="اسم المستخدم" onChange={(e) => setUserName(e.target.value)}/>
-                    </div>
-                    <div className="inputContainer">
-                        <label><CiMail/></label>
-                        <input type="text" value={email} placeholder="البريد الالكتروني" onChange={(e) => setEmail(e.target.value)}/>
+                        <input type="text" value={userName} placeholder="اسم المستخدم" onChange={(e) => setUserName(e.target.value)}/>
                     </div>
                     <div className="inputContainer">
                         <label><CiLock/></label>
