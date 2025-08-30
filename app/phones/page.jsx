@@ -135,6 +135,7 @@ function Phones() {
 
 const handlePrintLabel = (product) => {
   const printWindow = window.open('', '', 'width=400,height=300');
+
   const htmlContent = `
     <html>
       <head>
@@ -142,29 +143,29 @@ const handlePrintLabel = (product) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
-        @media print {
-          @page {
-            size: auto;
-            margin: 0;
+          @media print {
+            @page {
+              size: auto;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
           }
-          body {
-            margin: 0;
-            padding: 0;
-          }
-        }
           .label {
-            width: 100%;
-            height: 100%;
+            width: 90mm;       /* عرض الليبل */
+            height: 40mm;      /* ارتفاع الليبل */
             box-sizing: border-box;
             padding: 2mm;
             display: flex;
             flex-direction: column;
-            justify-content: start;
+            justify-content: center;
             align-items: center;
             font-family: Arial, sans-serif;
             font-size: 8pt;
             gap: 1mm;
-            page-break-inside: avoid;
+            page-break-inside: avoid; /* يمنع تقسيم الليبل */
             overflow: hidden;
             text-align: center;
           }
@@ -184,12 +185,10 @@ const handlePrintLabel = (product) => {
             align-items: center;
             font-size: 7pt;
           }
-          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
           svg.barcode {
-            width: 40mm;
+            width: 80%;
             height: 12mm;
           }
-          /* شيل أي هوامش افتراضية للباركود */
           .barcode rect, .barcode path { shape-rendering: crispEdges; }
         </style>
       </head>
@@ -206,14 +205,12 @@ const handlePrintLabel = (product) => {
 
         <script>
           window.onload = function () {
-            // ⚠️ JsBarcode بيستخدم px داخليًا؛ هنخليه بدون قيم تحجيم ويُقاس بالـ CSS (mm) اللي فوق
-            JsBarcode("#barcode", "${'${product.code}'}", {
+            JsBarcode("#barcode", "${product.code}", {
               format: "CODE128",
               displayValue: false,
-              margin: 0,     // بدون هوامش داخلية
+              margin: 0
             });
 
-            // اطبع واقفل النافذة
             setTimeout(() => {
               window.print();
               window.onafterprint = () => window.close();
@@ -227,6 +224,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
 
