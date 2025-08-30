@@ -134,7 +134,7 @@ function Phones() {
 
 
 const handlePrintLabel = (product) => {
-  const printWindow = window.open('', '', 'width=300,height=200');
+  const printWindow = window.open('', '', 'width=400,height=300');
 
   const htmlContent = `
     <html>
@@ -142,8 +142,8 @@ const handlePrintLabel = (product) => {
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
           @page {
-            size: auto;   /* الطابعة تحدد المقاس تلقائي */
-            margin: 0;    /* بدون هوامش */
+            size: 50mm 30mm;   /* مقاس ثابت لليبل */
+            margin: 0;        
           }
           body {
             margin: 0;
@@ -155,9 +155,11 @@ const handlePrintLabel = (product) => {
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            padding: 2mm; /* مسافة بسيطة جوه الليبل */
+            padding: 2mm;
             font-size: 9pt;
             font-family: Arial, sans-serif;
+
+            page-break-inside: avoid; /* 🔥 يمنع فصل المحتوى لصفحتين */
           }
           .content {
             display: flex;
@@ -165,6 +167,8 @@ const handlePrintLabel = (product) => {
             align-items: center;
             gap: 3px;
             font-size: 8pt;
+            flex-wrap: wrap;
+            text-align: center;
           }
           svg.barcode {
             margin-top: 2px;
@@ -188,8 +192,8 @@ const handlePrintLabel = (product) => {
             JsBarcode("#barcode", "${product.code}", {
               format: "CODE128",
               displayValue: false,
-              width: 2,   /* عرض الخطوط */
-              height: 40  /* ارتفاع الباركود */
+              width: 2,
+              height: 30   /* 👈 قللنا الارتفاع شوية عشان كله ي fit */
             });
 
             setTimeout(() => {
@@ -205,6 +209,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
 
