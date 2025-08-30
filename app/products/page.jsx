@@ -120,41 +120,59 @@ function Products() {
     }
   };
 
-  const handlePrintLabel = (product) => {
-    const printWindow = window.open('', '', 'width=300,height=200');
-    const htmlContent = `
-      <html>
-        <head>
-          <style>
-            @media print {
-              body { margin: 0; padding: 0; }
-            }
-            .label {
-              width: 5cm;
-              height: 3cm;
-              padding: 10px;
-              font-size: 14px;
-              font-family: Arial, sans-serif;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              border: 1px dashed #000;
-              box-sizing: border-box;
-            }
-          </style>
-        </head>
-        <body onload="setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 300);">
-          <div class="label">
-            <div><strong>اسم المنتج:</strong> ${product.name}</div>
-            <div><strong>الكود:</strong> ${product.code}</div>
-          </div>
-        </body>
-      </html>
-    `;
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-  };
+const handlePrintLabel = (product) => {
+  const printWindow = window.open('', '', 'width=300,height=200');
+
+  const htmlContent = `
+    <html>
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+        <style>
+          @media print {
+            @page { size: auto; margin: 0; }
+            body { margin: 0; padding: 0; }
+          }
+          .label {
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #000;
+            box-sizing: border-box;
+          }
+          svg {
+            width: 100%;
+            height: 50%;
+          }
+        </style>
+      </head>
+      <body onload="
+        JsBarcode('#barcode', '${product.code}', {
+          format: 'CODE128',
+          displayValue: true,
+          fontSize: 12,
+          width: 2,
+          height: 40
+        });
+        setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 500);
+      ">
+        <div class="label">
+          <div><strong>${product.name}</strong></div>
+          <svg id="barcode"></svg>
+        </div>
+      </body>
+    </html>
+  `;
+
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+};
+
 
   return (
     <div className={styles.products}>

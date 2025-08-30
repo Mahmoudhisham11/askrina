@@ -503,9 +503,7 @@ const handlePrintLabel = (product) => {
                       <button className={styles.delBtn} onClick={() => handleDelete(product.id)}>
                         <FaRegTrashAlt />
                       </button>
-                      <button onClick={() => handlePrintLabel(product)} className={styles.print}>
-                        🖨️
-                      </button>
+                      <button onClick={() => handlePrintLabel(product)} className={styles.print}> 🖨️ </button>
                       <button onClick={() => handleEdit(product)} className={styles.print}>
                         <CiEdit/>
                       </button>
