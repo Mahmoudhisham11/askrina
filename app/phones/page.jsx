@@ -159,7 +159,7 @@ const handlePrintLabel = (product) => {
             padding: 2mm;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: start;
             align-items: center;
             font-family: Arial, sans-serif;
             font-size: 8pt;
