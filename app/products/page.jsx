@@ -123,51 +123,78 @@ function Products() {
 const handlePrintLabel = (product) => {
   const printWindow = window.open('', '', 'width=300,height=200');
 
-  const htmlContent = `
-    <html>
-      <head>
-        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-        <style>
-          @media print {
-            @page { size: auto; margin: 0; }
-            body { margin: 0; padding: 0; }
+const htmlContent = `
+  <html>
+    <head>
+      <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+      <style>
+        @media print {
+          @page {
+            size: auto;
+            margin: 0;
           }
-          .label {
-            width: 100%;
-            height: 100%;
-            padding: 5px;
-            font-size: 12px;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px dashed #000;
-            box-sizing: border-box;
+          body {
+            margin: 0;
+            padding: 0;
           }
-          svg {
-            width: 100%;
-            height: 50%;
-          }
-        </style>
-      </head>
-      <body onload="
-        JsBarcode('#barcode', '${product.code}', {
-          format: 'CODE128',
-          displayValue: true,
-          fontSize: 12,
-          width: 2,
-          height: 40
-        });
-        setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 500);
-      ">
-        <div class="label">
-          <div><strong>${product.name}</strong></div>
-          <svg id="barcode"></svg>
-        </div>
-      </body>
-    </html>
-  `;
+        }
+        .label {
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          padding: 2mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: center;
+          font-family: Arial, sans-serif;
+          font-size: 8pt;
+          gap: 1mm;
+          page-break-inside: avoid;
+          overflow: hidden;
+          text-align: center;
+        }
+        .name {
+          max-width: 100%;
+          font-weight: 600;
+          line-height: 1.1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .content {
+          display: flex;
+          gap: 2mm;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          font-size: 7pt;
+        }
+        svg.barcode {
+          width: 40mm;
+          height: 12mm;
+        }
+        .barcode rect, .barcode path { shape-rendering: crispEdges; }
+      </style>
+    </head>
+    <body onload="
+      JsBarcode('#barcode', '${product.code}', {
+        format: 'CODE128',
+        displayValue: true,
+        fontSize: 12,
+        width: 2,
+        height: 40
+      });
+      setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 500);
+    ">
+      <div class="label">
+        <div><strong>${product.name}</strong></div>
+        <svg id="barcode"></svg>
+      </div>
+    </body>
+  </html>
+`;
+
 
   printWindow.document.write(htmlContent);
   printWindow.document.close();
