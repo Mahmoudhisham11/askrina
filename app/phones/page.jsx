@@ -141,14 +141,6 @@ const handlePrintLabel = (product) => {
       <head>
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
-          @page {
-              size: 30mm 50mm portrait;
-              margin: 0;
-          }
-          body {
-            margin: 0;
-            padding: 0;
-          }
           .label {
             display: flex;
             flex-direction: column;
