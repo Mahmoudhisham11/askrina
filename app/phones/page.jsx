@@ -134,10 +134,7 @@ function Phones() {
 
 
 const handlePrintLabel = (product) => {
-  // 👇 عدّل المقاسات هنا حسب رول الليبل عندك
-
   const printWindow = window.open('', '', 'width=400,height=300');
-
   const htmlContent = `
     <html>
       <head>
@@ -145,6 +142,16 @@ const handlePrintLabel = (product) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
+        @media print {
+          @page {
+            size: auto;
+            margin: 0;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+          }
+        }
           .label {
             width: var(--w);
             height: var(--h);
