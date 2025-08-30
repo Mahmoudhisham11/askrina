@@ -131,7 +131,7 @@ const handlePrintLabel = (product) => {
         @media print {
           @page {
             size: auto;
-            margin: 0;
+            margin: 5mm;   /* مساحة بيضا حول الليبل عند الطباعة */
           }
           body {
             margin: 5mm;   /* المساحة البيضاء حول الليبل على الورقة */
@@ -154,11 +154,13 @@ const handlePrintLabel = (product) => {
           align-items: center;    /* المحتوى في الوسط أفقي */
           font-family: Arial, sans-serif;
           font-size: 8pt;
-          gap: 2mm;
+          gap: 2mm;               /* المسافة بين عناصر الليبل */
           text-align: center;
+          page-break-inside: avoid; /* يمنع تقسيم الليبل عند الطباعة */
+          overflow: hidden;
         }
         svg.barcode {
-          width: 35mm;
+          width: 35mm;  /* مقاس الباركود */
           height: 12mm;
         }
         .barcode rect, .barcode path { shape-rendering: crispEdges; }
@@ -170,9 +172,13 @@ const handlePrintLabel = (product) => {
         displayValue: true,
         fontSize: 12,
         width: 2,
-        height: 40
+        height: 40,
+        margin: 0           /* بدون هوامش داخلية للباركود */
       });
-      setTimeout(() => { window.print(); setTimeout(() => window.close(), 500); }, 500);
+      setTimeout(() => { 
+        window.print(); 
+        setTimeout(() => window.close(), 500); 
+      }, 500);
     ">
       <div class="label">
         <div><strong>${product.name}</strong></div>
@@ -187,6 +193,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.close();
 };
 
+  
 
 
 
