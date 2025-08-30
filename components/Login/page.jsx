@@ -25,10 +25,10 @@ function Login() {
             alert("يجب ادخال كلمة المرور")
             return
         }
-        const q = query(collection(db, 'snadUsers'), where('userName', '==', userName))
+        const q = query(collection(db, 'users'), where('userName', '==', userName))
         const querySnapshot = await getDocs(q)
         if(querySnapshot.empty) {
-            await addDoc(collection(db, 'snadUsers'), {
+            await addDoc(collection(db, 'users'), {
                 userName,
                  password, 
                  shop,
@@ -44,7 +44,7 @@ function Login() {
     }
 
     const handleLogin = async() => {
-        const q = query(collection(db, 'snadUsers'), where('userName', '==', userName))
+        const q = query(collection(db, 'users'), where('userName', '==', userName))
         const querySnapshot = await getDocs(q)
         if(querySnapshot.empty) {
             alert('اسم المستخدم غير صحيح')

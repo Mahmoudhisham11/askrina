@@ -55,7 +55,7 @@ function Main() {
       if (!storageUserName) return;
 
       const q = query(
-        collection(db, 'snadUsers'),
+        collection(db, 'users'),
         where('userName', '==', storageUserName)
       );
 

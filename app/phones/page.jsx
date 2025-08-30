@@ -142,33 +142,33 @@ const handlePrintLabel = (product) => {
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
           @page {
-            size: 50mm 30mm; /* مقاس الاستيكر */
-            margin: 0; /* بدون هوامش */
+            size: auto;   /* الطابعة تحدد المقاس تلقائي */
+            margin: 0;    /* بدون هوامش */
           }
           body {
             margin: 0;
             padding: 0;
           }
           .label {
-            width: 50mm;
-            height: 30mm;
-            font-size: 10pt;
-            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
+            padding: 2mm; /* مسافة بسيطة جوه الليبل */
+            font-size: 9pt;
+            font-family: Arial, sans-serif;
           }
           .content {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 3px;
-            font-size: 9pt;
+            font-size: 8pt;
           }
           svg.barcode {
             margin-top: 2px;
+            max-width: 100%;
           }
         </style>
       </head>
@@ -188,8 +188,8 @@ const handlePrintLabel = (product) => {
             JsBarcode("#barcode", "${product.code}", {
               format: "CODE128",
               displayValue: false,
-              width: 1.5, /* عرض كل خط في الباركود */
-              height: 20   /* ارتفاع الباركود بالملم */
+              width: 2,   /* عرض الخطوط */
+              height: 40  /* ارتفاع الباركود */
             });
 
             setTimeout(() => {
@@ -205,6 +205,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
 
