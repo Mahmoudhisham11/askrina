@@ -142,16 +142,16 @@ const handlePrintLabel = (product) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
-        @media print {
-          @page {
-            size: auto;
-            margin: 0;
+          @media print {
+            @page {
+              size: auto;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
           }
-          body {
-            margin: 0;
-            padding: 0;
-          }
-        }
           .label {
             width: 100%;
             height: 100%;
@@ -184,12 +184,11 @@ const handlePrintLabel = (product) => {
             align-items: center;
             font-size: 7pt;
           }
-          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
+          /* حجم الباركود أكبر شوي */
           svg.barcode {
-            width: 40mm;
-            height: 12mm;
+            width: 50mm;  /* ✅ زودنا العرض */
+            height: 16mm; /* ✅ زودنا الارتفاع */
           }
-          /* شيل أي هوامش افتراضية للباركود */
           .barcode rect, .barcode path { shape-rendering: crispEdges; }
         </style>
       </head>
@@ -197,23 +196,19 @@ const handlePrintLabel = (product) => {
         <div class="label">
           <div class="name">${product.name ?? ''}</div>
           <div class="content">
-            <div><strong>B:</strong> ${product.battery ?? ''}</div>
-            <div><strong>S:</strong> ${product.storage ?? ''}</div>
-            <div><strong>C:</strong> ${product.code ?? ''}</div>
+            <div><strong>سعر البيع:</strong> ${product.sellPrice ?? ''} EGP</div>
+            <div><strong>الكود:</strong> ${product.code ?? ''}</div>
           </div>
           <svg id="barcode" class="barcode"></svg>
         </div>
 
         <script>
           window.onload = function () {
-            // ⚠️ JsBarcode بيستخدم px داخليًا؛ هنخليه بدون قيم تحجيم ويُقاس بالـ CSS (mm) اللي فوق
             JsBarcode("#barcode", "${'${product.code}'}", {
               format: "CODE128",
               displayValue: false,
-              margin: 0,     // بدون هوامش داخلية
+              margin: 0
             });
-
-            // اطبع واقفل النافذة
             setTimeout(() => {
               window.print();
               window.onafterprint = () => window.close();
@@ -223,10 +218,10 @@ const handlePrintLabel = (product) => {
       </body>
     </html>
   `;
-
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
 
