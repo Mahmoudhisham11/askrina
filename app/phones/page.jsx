@@ -153,8 +153,8 @@ const handlePrintLabel = (product) => {
           }
         }
           .label {
-            width: var(--w);
-            height: var(--h);
+            width: 100%;
+            height: 100%;
             box-sizing: border-box;
             padding: 2mm;
             display: flex;
