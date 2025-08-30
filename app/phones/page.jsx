@@ -133,28 +133,30 @@ function Phones() {
   };
 
 
-const handlePrintLabel = (product) => {
-  const printWindow = window.open('', '', 'width=400,height=300');
-  const htmlContent = `
+const printLabels = () => {
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
     <html>
       <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+        <title>Print Labels</title>
         <style>
-        @media print {
-          @page {
-            size: auto;
-            margin: 0;
+          @media print {
+            @page {
+              size: auto; /* 👈 مقاس الليبل */
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;  /* يوسّط أفقياً */
+              align-items: center;      /* يوسّط رأسياً */
+            }
           }
-          body {
-            margin: 0;
-            padding: 0;
-          }
-        }
           .label {
             width: 100%;
             height: 100%;
+            margin: auto;
             box-sizing: border-box;
             padding: 2mm;
             display: flex;
@@ -168,65 +170,43 @@ const handlePrintLabel = (product) => {
             overflow: hidden;
             text-align: center;
           }
-          .name {
+          .label img {
             max-width: 100%;
-            font-weight: 600;
-            line-height: 1.1;
+            max-height: 12mm;
+          }
+          .label div {
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
           }
-          .content {
-            display: flex;
-            gap: 2mm;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            font-size: 7pt;
-          }
-          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
-          svg.barcode {
-            width: calc(var(--w) - 6mm);
-            height: 12mm;
-          }
-          /* شيل أي هوامش افتراضية للباركود */
-          .barcode rect, .barcode path { shape-rendering: crispEdges; }
         </style>
       </head>
       <body>
-        <div class="label">
-          <div class="name">${product.name ?? ''}</div>
-          <div class="content">
-            <div><strong>B:</strong> ${product.battery ?? ''}</div>
-            <div><strong>S:</strong> ${product.storage ?? ''}</div>
-            <div><strong>C:</strong> ${product.code ?? ''}</div>
-          </div>
-          <svg id="barcode" class="barcode"></svg>
-        </div>
-
+        ${
+          selectedProducts
+            .map(
+              (product) => `
+                <div class="label">
+                  <img src="${product.qr}" alt="QR Code" />
+                  <div>${product.name}</div>
+                  <div>Code: ${product.code}</div>
+                </div>
+              `
+            )
+            .join("")
+        }
         <script>
-          window.onload = function () {
-            // ⚠️ JsBarcode بيستخدم px داخليًا؛ هنخليه بدون قيم تحجيم ويُقاس بالـ CSS (mm) اللي فوق
-            JsBarcode("#barcode", "${'${product.code}'}", {
-              format: "CODE128",
-              displayValue: false,
-              margin: 0,     // بدون هوامش داخلية
-            });
-
-            // اطبع واقفل النافذة
-            setTimeout(() => {
-              window.print();
-              window.onafterprint = () => window.close();
-            }, 100);
+          window.onload = () => {
+            window.print();
+            window.onafterprint = () => window.close();
           };
         </script>
       </body>
     </html>
-  `;
-
-  printWindow.document.write(htmlContent);
+  `);
   printWindow.document.close();
 };
+
 
 
 
