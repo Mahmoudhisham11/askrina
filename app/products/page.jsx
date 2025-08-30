@@ -123,7 +123,7 @@ function Products() {
 const handlePrintLabel = (product) => {
   const printWindow = window.open('', '', 'width=300,height=200');
 
-const htmlContent = `
+  const htmlContent = `
   <html>
     <head>
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -138,6 +138,10 @@ const htmlContent = `
             padding: 0;
           }
         }
+        body, html {
+          width: 100%;
+          height: 100%;
+        }
         .label {
           width: 100%;
           height: 100%;
@@ -145,33 +149,15 @@ const htmlContent = `
           padding: 2mm;
           display: flex;
           flex-direction: column;
-          justify-content: start;
-          align-items: center;
+          justify-content: center; /* يخلي المحتوى في النص رأسي */
+          align-items: center;    /* يخلي المحتوى في النص أفقي */
           font-family: Arial, sans-serif;
           font-size: 8pt;
-          gap: 1mm;
-          page-break-inside: avoid;
-          overflow: hidden;
+          gap: 2mm;
           text-align: center;
         }
-        .name {
-          max-width: 100%;
-          font-weight: 600;
-          line-height: 1.1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .content {
-          display: flex;
-          gap: 2mm;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-          font-size: 7pt;
-        }
         svg.barcode {
-          width: 40mm;
+          width: 35mm;   /* ممكن تقلل أو تكبر حسب الاستيكر */
           height: 12mm;
         }
         .barcode rect, .barcode path { shape-rendering: crispEdges; }
@@ -189,17 +175,17 @@ const htmlContent = `
     ">
       <div class="label">
         <div><strong>${product.name}</strong></div>
-        <div><strong>${product.sellPrice}</strong></div>
+        <div><strong>${product.sellPrice} جنية</strong></div>
         <svg id="barcode"></svg>
       </div>
     </body>
   </html>
-`;
-
+  `;
 
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
   return (
