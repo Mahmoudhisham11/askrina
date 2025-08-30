@@ -186,8 +186,8 @@ const handlePrintLabel = (product) => {
           }
           /* حجم الباركود أكبر شوي */
           svg.barcode {
-            width: 50mm;  /* ✅ زودنا العرض */
-            height: 16mm; /* ✅ زودنا الارتفاع */
+            width: 40mm;
+            height: 12mm;/* ✅ زودنا الارتفاع */
           }
           .barcode rect, .barcode path { shape-rendering: crispEdges; }
         </style>
