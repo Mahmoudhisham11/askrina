@@ -131,36 +131,36 @@ const handlePrintLabel = (product) => {
         @media print {
           @page {
             size: auto;
-            margin: 5mm;   /* مساحة بيضا حول الليبل عند الطباعة */
+            margin: 0;   /* إلغاء أي مساحة بيضا عند الطباعة */
           }
           body {
-            margin: 5mm;   /* المساحة البيضاء حول الليبل على الورقة */
+            margin: 0;   /* إلغاء أي مساحة بيضا حول الليبل */
             padding: 0;
           }
         }
         body, html {
           width: 100%;
           height: 100%;
-          margin: 5mm;    /* المساحة البيضاء أثناء العرض على الشاشة */
+          margin: 0;    /* بدون مسافة بيضا أثناء العرض */
         }
         .label {
           width: 100%;
           height: 100%;
           box-sizing: border-box;
-          padding: 4mm;   /* زيادة البادينج داخل الليبل */
+          padding: 2mm;   /* نفس البادينج في الكود الأول */
           display: flex;
           flex-direction: column;
-          justify-content: center; /* المحتوى في الوسط رأسي */
-          align-items: center;    /* المحتوى في الوسط أفقي */
+          justify-content: center; 
+          align-items: center;    
           font-family: Arial, sans-serif;
           font-size: 8pt;
-          gap: 2mm;               /* المسافة بين عناصر الليبل */
+          gap: 1mm;               /* نفس الـ gap في الكود الأول */
           text-align: center;
-          page-break-inside: avoid; /* يمنع تقسيم الليبل عند الطباعة */
+          page-break-inside: avoid;
           overflow: hidden;
         }
         svg.barcode {
-          width: 35mm;  /* مقاس الباركود */
+          width: 40mm;  /* نفس حجم الباركود في الكود الأول */
           height: 12mm;
         }
         .barcode rect, .barcode path { shape-rendering: crispEdges; }
@@ -169,11 +169,8 @@ const handlePrintLabel = (product) => {
     <body onload="
       JsBarcode('#barcode', '${product.code}', {
         format: 'CODE128',
-        displayValue: true,
-        fontSize: 12,
-        width: 2,
-        height: 40,
-        margin: 0           /* بدون هوامش داخلية للباركود */
+        displayValue: false,
+        margin: 0
       });
       setTimeout(() => { 
         window.print(); 
@@ -192,6 +189,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
   
 
