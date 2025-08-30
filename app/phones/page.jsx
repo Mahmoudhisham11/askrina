@@ -135,8 +135,6 @@ function Phones() {
 
 const handlePrintLabel = (product) => {
   // 👇 عدّل المقاسات هنا حسب رول الليبل عندك
-  const labelWmm = 40; // العرض بالميلي (مثلاً 40mm)
-  const labelHmm = 30; // الارتفاع بالميلي (مثلاً 30mm)
 
   const printWindow = window.open('', '', 'width=400,height=300');
 
@@ -147,26 +145,6 @@ const handlePrintLabel = (product) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
-          :root{
-            --w: ${labelWmm}mm;
-            --h: ${labelHmm}mm;
-          }
-          /* ✅ قل للمتصفح إن الورقة قد كده بالظبط ومن غير هوامش */
-          @page {
-            size: var(--w) var(--h);
-            margin: 0;
-          }
-          html, body {
-            width: var(--w);
-            height: var(--h);
-            margin: 0;
-            padding: 0;
-          }
-          /* نخلي الطباعة بالظبط من غير تلاعب ألوان/تحجيم */
-          @media print {
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          }
-
           .label {
             width: var(--w);
             height: var(--h);
@@ -242,9 +220,6 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
-
-
-
 
 
 
