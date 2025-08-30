@@ -186,7 +186,7 @@ const handlePrintLabel = (product) => {
           }
           /* خلي الـ SVG نفسه بمقاس ملي فعلي */
           svg.barcode {
-            width: calc(var(--w) - 6mm);
+            width: 40mm;
             height: 12mm;
           }
           /* شيل أي هوامش افتراضية للباركود */
