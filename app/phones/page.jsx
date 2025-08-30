@@ -134,64 +134,105 @@ function Phones() {
 
 
 const handlePrintLabel = (product) => {
+  // 👇 عدّل المقاسات هنا حسب رول الليبل عندك
+  const labelWmm = 40; // العرض بالميلي (مثلاً 40mm)
+  const labelHmm = 30; // الارتفاع بالميلي (مثلاً 30mm)
+
   const printWindow = window.open('', '', 'width=400,height=300');
 
   const htmlContent = `
     <html>
       <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
+          :root{
+            --w: ${labelWmm}mm;
+            --h: ${labelHmm}mm;
+          }
+          /* ✅ قل للمتصفح إن الورقة قد كده بالظبط ومن غير هوامش */
+          @page {
+            size: var(--w) var(--h);
+            margin: 0;
+          }
+          html, body {
+            width: var(--w);
+            height: var(--h);
+            margin: 0;
+            padding: 0;
+          }
+          /* نخلي الطباعة بالظبط من غير تلاعب ألوان/تحجيم */
+          @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+
           .label {
+            width: var(--w);
+            height: var(--h);
+            box-sizing: border-box;
+            padding: 2mm;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-sizing: border-box;
-            padding: 2mm;
-            font-size: 9pt;
             font-family: Arial, sans-serif;
-
-            page-break-inside: avoid; /* 🔥 يمنع فصل المحتوى لصفحتين */
+            font-size: 8pt;
+            gap: 1mm;
+            page-break-inside: avoid;
+            overflow: hidden;
+            text-align: center;
+          }
+          .name {
+            max-width: 100%;
+            font-weight: 600;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .content {
             display: flex;
+            gap: 2mm;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 3px;
-            font-size: 8pt;
-            flex-wrap: wrap;
-            text-align: center;
+            font-size: 7pt;
           }
+          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
           svg.barcode {
-            margin-top: 2px;
-            max-width: 100%;
+            width: calc(var(--w) - 6mm);
+            height: 12mm;
           }
+          /* شيل أي هوامش افتراضية للباركود */
+          .barcode rect, .barcode path { shape-rendering: crispEdges; }
         </style>
       </head>
       <body>
         <div class="label">
-          <div>${product.name}</div>
+          <div class="name">${product.name ?? ''}</div>
           <div class="content">
-            <div><strong>B:</strong> ${product.battery} /</div>
-            <div><strong>S:</strong> ${product.storage} /</div>
-            <div><strong>C:</strong> ${product.code}</div>
+            <div><strong>B:</strong> ${product.battery ?? ''}</div>
+            <div><strong>S:</strong> ${product.storage ?? ''}</div>
+            <div><strong>C:</strong> ${product.code ?? ''}</div>
           </div>
           <svg id="barcode" class="barcode"></svg>
         </div>
 
         <script>
           window.onload = function () {
-            JsBarcode("#barcode", "${product.code}", {
+            // ⚠️ JsBarcode بيستخدم px داخليًا؛ هنخليه بدون قيم تحجيم ويُقاس بالـ CSS (mm) اللي فوق
+            JsBarcode("#barcode", "${'${product.code}'}", {
               format: "CODE128",
               displayValue: false,
-              width: 2,
-              height: 30   /* 👈 قللنا الارتفاع شوية عشان كله ي fit */
+              margin: 0,     // بدون هوامش داخلية
             });
 
+            // اطبع واقفل النافذة
             setTimeout(() => {
               window.print();
-              setTimeout(() => window.close(), 500);
-            }, 300);
+              window.onafterprint = () => window.close();
+            }, 100);
           };
         </script>
       </body>
@@ -201,6 +242,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
 
