@@ -134,30 +134,31 @@ const handlePrintLabel = (product) => {
             margin: 0;
           }
           body {
-            margin: 0;
+            margin: 5mm;   /* المساحة البيضاء حول الليبل على الورقة */
             padding: 0;
           }
         }
         body, html {
           width: 100%;
           height: 100%;
+          margin: 5mm;    /* المساحة البيضاء أثناء العرض على الشاشة */
         }
         .label {
           width: 100%;
           height: 100%;
           box-sizing: border-box;
-          padding: 2mm;
+          padding: 4mm;   /* زيادة البادينج داخل الليبل */
           display: flex;
           flex-direction: column;
-          justify-content: center; /* يخلي المحتوى في النص رأسي */
-          align-items: center;    /* يخلي المحتوى في النص أفقي */
+          justify-content: center; /* المحتوى في الوسط رأسي */
+          align-items: center;    /* المحتوى في الوسط أفقي */
           font-family: Arial, sans-serif;
           font-size: 8pt;
           gap: 2mm;
           text-align: center;
         }
         svg.barcode {
-          width: 35mm;   /* ممكن تقلل أو تكبر حسب الاستيكر */
+          width: 35mm;
           height: 12mm;
         }
         .barcode rect, .barcode path { shape-rendering: crispEdges; }
@@ -185,6 +186,8 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
+
 
 
 
