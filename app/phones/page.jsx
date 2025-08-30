@@ -150,10 +150,6 @@ const handlePrintLabel = (product) => {
           body {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
           }
         }
           .label {
