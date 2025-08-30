@@ -121,7 +121,7 @@ function Products() {
   };
 
 const handlePrintLabel = (product) => {
-  const printWindow = window.open('', '', 'width=300,height=200');
+  const printWindow = window.open('', '', 'width=400,height=300');
 
   const htmlContent = `
   <html>
@@ -129,74 +129,73 @@ const handlePrintLabel = (product) => {
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-        <style>
+      <style>
         @media print {
-          @page {
-            size: auto;
-            margin: 0;
-          }
-          body {
-            margin: 0;
-            padding: 0;
-          }
+          @page { size: auto; margin: 0; }
+          body { margin: 0; padding: 0; }
         }
-          .label {
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            padding: 2mm;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            font-size: 8pt;
-            gap: 1mm;
-            page-break-inside: avoid;
-            overflow: hidden;
-            text-align: center;
-          }
-          .name {
-            max-width: 100%;
-            font-weight: 600;
-            line-height: 1.1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          .content {
-            display: flex;
-            gap: 2mm;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            font-size: 7pt;
-          }
-          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
-          svg.barcode {
-            width: 40mm;
-            height: 12mm;
-          }
-          /* شيل أي هوامش افتراضية للباركود */
-          .barcode rect, .barcode path { shape-rendering: crispEdges; }
-        </style>
+        .label {
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          padding: 2mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          font-family: Arial, sans-serif;
+          font-size: 8pt;
+          gap: 1mm;
+          page-break-inside: avoid;
+          overflow: hidden;
+          text-align: center;
+        }
+        .name {
+          max-width: 100%;
+          font-weight: 600;
+          line-height: 1.1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .content {
+          display: flex;
+          gap: 2mm;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          font-size: 7pt;
+        }
+        svg.barcode {
+          width: 40mm;
+          height: 12mm;
+        }
+        .barcode rect, .barcode path { shape-rendering: crispEdges; }
+      </style>
     </head>
-    <body onload="
-      JsBarcode('#barcode', '${product.code}', {
-        format: 'CODE128',
-        displayValue: false,
-        margin: 0
-      });
-      setTimeout(() => { 
-        window.print(); 
-        setTimeout(() => window.close(), 500); 
-      }, 500);
-    ">
+    <body>
       <div class="label">
-        <div class="name">${product.name}</div>
-        <div><strong>${product.sellPrice} جنية</strong></div>
+        <div class="name">${product.name ?? ''}</div>
+        <div class="content">
+          <div><strong>سعر البيع:</strong> ${product.sellPrice ?? ''} جنية</div>
+          <div><strong>الكود:</strong> ${product.code ?? ''}</div>
+        </div>
         <svg id="barcode" class="barcode"></svg>
       </div>
+
+      <script>
+        window.onload = function () {
+          JsBarcode("#barcode", "${'${product.code}'}", {
+            format: "CODE128",
+            displayValue: false,
+            margin: 0
+          });
+          setTimeout(() => {
+            window.print();
+            window.onafterprint = () => window.close();
+          }, 100);
+        };
+      </script>
     </body>
   </html>
   `;
@@ -204,6 +203,7 @@ const handlePrintLabel = (product) => {
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };
+
 
 
   
