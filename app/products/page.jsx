@@ -126,45 +126,60 @@ const handlePrintLabel = (product) => {
   const htmlContent = `
   <html>
     <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-      <style>
+        <style>
         @media print {
           @page {
             size: auto;
-            margin: 0;   /* إلغاء أي مساحة بيضا عند الطباعة */
+            margin: 0;
           }
           body {
-            margin: 0;   /* إلغاء أي مساحة بيضا حول الليبل */
+            margin: 0;
             padding: 0;
           }
         }
-        body, html {
-          width: 100%;
-          height: 100%;
-          margin: 0;    /* بدون مسافة بيضا أثناء العرض */
-        }
-        .label {
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          padding: 2mm;   /* نفس البادينج في الكود الأول */
-          display: flex;
-          flex-direction: column;
-          justify-content: center; 
-          align-items: center;    
-          font-family: Arial, sans-serif;
-          font-size: 8pt;
-          gap: 1mm;               /* نفس الـ gap في الكود الأول */
-          text-align: center;
-          page-break-inside: avoid;
-          overflow: hidden;
-        }
-        svg.barcode {
-          width: 40mm;  /* نفس حجم الباركود في الكود الأول */
-          height: 12mm;
-        }
-        .barcode rect, .barcode path { shape-rendering: crispEdges; }
-      </style>
+          .label {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+            gap: 1mm;
+            page-break-inside: avoid;
+            overflow: hidden;
+            text-align: center;
+          }
+          .name {
+            max-width: 100%;
+            font-weight: 600;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .content {
+            display: flex;
+            gap: 2mm;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            font-size: 7pt;
+          }
+          /* خلي الـ SVG نفسه بمقاس ملي فعلي */
+          svg.barcode {
+            width: 40mm;
+            height: 12mm;
+          }
+          /* شيل أي هوامش افتراضية للباركود */
+          .barcode rect, .barcode path { shape-rendering: crispEdges; }
+        </style>
     </head>
     <body onload="
       JsBarcode('#barcode', '${product.code}', {
@@ -178,9 +193,9 @@ const handlePrintLabel = (product) => {
       }, 500);
     ">
       <div class="label">
-        <div><strong>${product.name}</strong></div>
+        <div class="name">${product.name}</div>
         <div><strong>${product.sellPrice} جنية</strong></div>
-        <svg id="barcode"></svg>
+        <svg id="barcode" class="barcode"></svg>
       </div>
     </body>
   </html>
