@@ -189,6 +189,7 @@ const htmlContent = `
     ">
       <div class="label">
         <div><strong>${product.name}</strong></div>
+        <div><strong>${product.sellPrice}</strong></div>
         <svg id="barcode"></svg>
       </div>
     </body>
