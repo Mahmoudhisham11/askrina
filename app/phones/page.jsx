@@ -144,7 +144,7 @@ const handlePrintLabel = (product) => {
         <style>
         @media print {
           @page {
-            size: auto;
+            size: 45mm 25mm;
             margin: 0;
           }
           body {
@@ -153,8 +153,8 @@ const handlePrintLabel = (product) => {
           }
         }
           .label {
-            width: 100%;
-            height: 100%;
+            width: 45mm;
+            height: 25mm;
             box-sizing: border-box;
             padding: 2mm;
             display: flex;
