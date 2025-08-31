@@ -13,8 +13,10 @@ import {
   collection, query, where, onSnapshot, addDoc, updateDoc, doc, deleteDoc, getDocs 
 } from "firebase/firestore";
 import { db } from "@/app/firebase";
+import { useRouter } from "next/navigation";
 
 function Main() {
+  const router = useRouter()
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [employess, setEmployess] = useState([]);
@@ -114,7 +116,6 @@ function Main() {
       });
   };
 
-
   const handleQtyChange = async (cartItem, delta) => {
     const newQty = cartItem.quantity + delta;
     if (newQty < 1) return;
@@ -144,6 +145,7 @@ function Main() {
 
   const phonesCount = products.filter(p => p.type === "phone").length;
   const otherCount = products.filter(p => p.type !== "phone").length;
+
   const handleSaveReport = async () => {
     if (isSaving) return;
     setIsSaving(true);
@@ -153,7 +155,7 @@ function Main() {
 
     if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "" || !selectedEmployee) {
       alert("يرجى ملء جميع الحقول، اختيار الموظف، وإضافة منتجات إلى السلة");
-      setIsSaving(false); // إعادة فتح الزرار لو فيه خطأ
+      setIsSaving(false);
       return;
     }
 
@@ -176,7 +178,7 @@ function Main() {
 
           if (sellQty > availableQty) {
             alert(`الكمية غير كافية للمنتج: ${item.name}`);
-            setIsSaving(false); // إعادة فتح الزرار
+            setIsSaving(false);
             return;
           } else if (sellQty === availableQty) {
             await deleteDoc(productRef);
@@ -188,36 +190,48 @@ function Main() {
         }
       }
 
-    const total = cart.reduce((sum, item) => sum + item.total, 0);
+      const total = cart.reduce((sum, item) => sum + item.total, 0);
 
-    const saleData = {
-      cart,
-      clientName,
-      phone,
-      total,
-      date: new Date(),
-      shop,
-      employee: selectedEmployee,
-    };
+      const saleData = {
+        cart,
+        clientName,
+        phone,
+        total,
+        date: new Date(),
+        shop,
+        employee: selectedEmployee,
+      };
 
-    await addDoc(collection(db, "reports"), saleData);
-    await addDoc(collection(db, "employeesReports"), saleData);
+      await addDoc(collection(db, "reports"), saleData);
+      await addDoc(collection(db, "employeesReports"), saleData);
 
-    const cartSnapshot = await getDocs(collection(db, "cart"));
-    for (const doc of cartSnapshot.docs) {
-      await deleteDoc(doc.ref);
+      // ✅ خزّن نسخة من الفاتورة في localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("lastInvoice", JSON.stringify({
+          cart,
+          clientName,
+          phone,
+          total,
+          lenth: cart.length,
+          date: new Date(),
+        }));
+      }
+
+      const cartSnapshot = await getDocs(collection(db, "cart"));
+      for (const doc of cartSnapshot.docs) {
+        await deleteDoc(doc.ref);
+      }
+
+      alert("تم حفظ التقرير بنجاح");
+    } catch (error) {
+      console.error("حدث خطأ أثناء حفظ التقرير:", error);
+      alert("حدث خطأ أثناء حفظ التقرير");
     }
 
-    alert("تم حفظ التقرير بنجاح");
-  } catch (error) {
-    console.error("حدث خطأ أثناء حفظ التقرير:", error);
-    alert("حدث خطأ أثناء حفظ التقرير");
-  }
-
-  setIsSaving(false); // إعادة فتح الزرار
-  setSavePage(false);
-};
-
+    setIsSaving(false);
+    setSavePage(false);
+    router.push('/resete');
+  };
 
   return (
     <div className={styles.mainContainer}>
@@ -252,7 +266,6 @@ function Main() {
           <button onClick={handleSaveReport} disabled={isSaving}>
             {isSaving ? "جارٍ الحفظ..." : "حفظ العملية"}
           </button>
-
         </div>
       </div>
 
@@ -274,7 +287,6 @@ function Main() {
             </div>
           </div>
         </div>
-        {/* ✅ تصنيفات المنتج */}
         <div className={styles.categoryContainer}>
           <div
             className={styles.category}
@@ -314,57 +326,54 @@ function Main() {
           </div>
         </div>
         <hr />
-        {/* ✅ جدول عرض المنتجات */}
         <div className={styles.tableContainer}>
           <table>
-                <thead>
-                    <tr>
-                        <th className={styles.lastRow}>الكود</th>
-                        <th>السعر</th>
-                        <th>السعر</th>
-                        <th>السريال</th>
-                        <th>الكمية</th>
-                        <th className={styles.lastRow}>تحديد</th>
-                        <th className={styles.lastRow}>تفاعل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredProducts.map((product) => (
-                        <tr key={product.id}>
-                        <td className={styles.lastRow}>{product.code}</td>
-                        <td>{product.name}</td>
-                        <td>{product.sellPrice} EGP</td>
-                        <td>{product.serial || "-"}</td>
-                        <td>{product.quantity}</td>
-                        <td  className={styles.lastRow}>
-                          <input
-                          type="number"
-                          placeholder="سعر مخصص"
-                          value={customPrices[product.id] || ""}
-                          onChange={(e) =>
-                            setCustomPrices({ ...customPrices, [product.id]: e.target.value })
-                          }
-                        />
-                        </td>
-                        <td className="actions">
-                            <button onClick={() => handleAddToCart(product)}>
-                            <CiShoppingCart />
-                            </button>
-                        </td>
-                        </tr>
-                    ))}
-                </tbody>
+            <thead>
+              <tr>
+                <th className={styles.lastRow}>الكود</th>
+                <th>السعر</th>
+                <th>السعر</th>
+                <th>السريال</th>
+                <th>الكمية</th>
+                <th className={styles.lastRow}>تحديد</th>
+                <th className={styles.lastRow}>تفاعل</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProducts.map((product) => (
+                <tr key={product.id}>
+                  <td className={styles.lastRow}>{product.code}</td>
+                  <td>{product.name}</td>
+                  <td>{product.sellPrice} EGP</td>
+                  <td>{product.serial || "-"}</td>
+                  <td>{product.quantity}</td>
+                  <td className={styles.lastRow}>
+                    <input
+                      type="number"
+                      placeholder="سعر مخصص"
+                      value={customPrices[product.id] || ""}
+                      onChange={(e) =>
+                        setCustomPrices({ ...customPrices, [product.id]: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td className="actions">
+                    <button onClick={() => handleAddToCart(product)}>
+                      <CiShoppingCart />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
        </div>
-     {/* ✅ الفاتورة */}
       <div className={styles.resetContainer}>
         <div className={styles.reset}>
           <div className={styles.resetTitle}>
             <h3>الفاتورة</h3>
             <hr />
           </div>
-
           <div className={styles.orderBox}>
             {cart.map((item) => (
               <div className={styles.ordersContainer} key={item.id}>
@@ -385,7 +394,6 @@ function Main() {
               </div>
             ))}
           </div>
-
           <div className={styles.totalContainer}>
             <hr />
             <div className={styles.totalBox}>
