@@ -132,8 +132,9 @@ function Main() {
 
   const totalAmount = cart.reduce((acc, item) => acc + item.total, 0);
 
+  // ✅ التعديل هنا عشان البحث يبقى بالـ code مش name
   const filteredProducts = products.filter((p) => {
-    const matchCode = searchCode.trim() === "" || p.name === searchCode.trim();
+    const matchCode = searchCode.trim() === "" || p.code === searchCode.trim();
     const matchType =
       filterType === "all"
         ? true
@@ -278,10 +279,16 @@ function Main() {
           <div className={styles.inputBox}>
             <div className="inputContainer">
               <label><IoMdSearch /></label>
-              <input type="text" list="codeList" placeholder="ابحث عن منتج" value={searchCode} onChange={(e) => setSearchCode(e.target.value)}/>
+              <input 
+                type="text" 
+                list="codeList" 
+                placeholder="ابحث بالكود" 
+                value={searchCode} 
+                onChange={(e) => setSearchCode(e.target.value)}
+              />
               <datalist id="codeList">
                 {products.map((p) => (
-                  <option key={p.id} value={p.name} />
+                  <option key={p.id} value={p.code} />
                 ))}
               </datalist>
             </div>
@@ -331,7 +338,7 @@ function Main() {
             <thead>
               <tr>
                 <th className={styles.lastRow}>الكود</th>
-                <th>السعر</th>
+                <th>الاسم</th>
                 <th>السعر</th>
                 <th>السريال</th>
                 <th>الكمية</th>
