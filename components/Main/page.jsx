@@ -74,7 +74,7 @@ function Main() {
 
       return () => unsubscribe();
     }
-}, []);
+  }, []);
 
   useEffect(() => {
     const q = query(collection(db, 'employees'))
@@ -86,34 +86,34 @@ function Main() {
   }, [])
 
   const handleAddToCart = async (product) => {
-      const customPrice = Number(customPrices[product.id]);
-      const finalPrice = !isNaN(customPrice) && customPrice > 0 ? customPrice : product.sellPrice;
-      await addDoc(collection(db, "cart"), {
-        name: product.name,
-        sellPrice: finalPrice,
-        productPrice: product.sellPrice,
-        buyPrice: product.buyPrice,
-        serial: product.serial || 0,
-        code: product.code,
-        battery: product.battery || 0,
-        storage: product.storage || 0,
-        color: product.color || 0,
-        box: product.box || 0,
-        condition: product.condition || 0,
-        sim: product.sim || 0,
-        tax: product.tax || 0,
-        quantity: 1,
-        type: product.type,
-        total: finalPrice,
-        date: new Date(),
-        shop: shop,
-      });
+    const customPrice = Number(customPrices[product.id]);
+    const finalPrice = !isNaN(customPrice) && customPrice > 0 ? customPrice : product.sellPrice;
+    await addDoc(collection(db, "cart"), {
+      name: product.name,
+      sellPrice: finalPrice,
+      productPrice: product.sellPrice,
+      buyPrice: product.buyPrice,
+      serial: product.serial || 0,
+      code: product.code,
+      battery: product.battery || 0,
+      storage: product.storage || 0,
+      color: product.color || 0,
+      box: product.box || 0,
+      condition: product.condition || 0,
+      sim: product.sim || 0,
+      tax: product.tax || 0,
+      quantity: 1,
+      type: product.type,
+      total: finalPrice,
+      date: new Date(),
+      shop: shop,
+    });
 
-      setCustomPrices(prev => {
-        const updated = { ...prev };
-        delete updated[product.id];
-        return updated;
-      });
+    setCustomPrices(prev => {
+      const updated = { ...prev };
+      delete updated[product.id];
+      return updated;
+    });
   };
 
   const handleQtyChange = async (cartItem, delta) => {
@@ -132,9 +132,10 @@ function Main() {
 
   const totalAmount = cart.reduce((acc, item) => acc + item.total, 0);
 
-  // ✅ التعديل هنا عشان البحث يبقى بالـ code مش name
+  // ✅ البحث بالكود (جزئي + بدون حساسية حالة الأحرف + إزالة المسافات الزائدة)
   const filteredProducts = products.filter((p) => {
-    const matchCode = searchCode.trim() === "" || p.code === searchCode.trim();
+    const search = searchCode.trim().toLowerCase();
+    const matchCode = search === "" || (p.code && p.code.toString().toLowerCase().includes(search));
     const matchType =
       filterType === "all"
         ? true
@@ -206,7 +207,6 @@ function Main() {
       await addDoc(collection(db, "reports"), saleData);
       await addDoc(collection(db, "employeesReports"), saleData);
 
-      // ✅ خزّن نسخة من الفاتورة في localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("lastInvoice", JSON.stringify({
           cart,
