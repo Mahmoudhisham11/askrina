@@ -38,8 +38,7 @@ function Resete() {
 
       {/* عرض الفاتورة على الشاشة */}
       <div className={styles.invoice}>
-        <h2>فاتورة مبيعات</h2>
-        <h3 style={{ textAlign: 'center' }}>فاتورة</h3>
+        <h3 style={{ textAlign: 'center' }}>فاتورة مبيعات</h3>
         <p><strong>العميل:</strong> {invoice.clientName}</p>
         <p><strong>الهاتف:</strong> {invoice.phone}</p>
 
@@ -68,13 +67,11 @@ function Resete() {
             </tr>
           </tfoot>
         </table>
-        <p>احمالي الفاتورة: {invoice.total}</p>
-        <p>المدفوع: {invoice.total}</p>
+      </div>
+      <div className={styles.text}>
+        <p>المدفوع: {invoice.total}$</p>
         <p>المتبقي: 0.0</p>
-        <p>عدد الاصناف:{invoice.lenth}</p>
-        <p>الرصيد السابق: 0.0</p>
-        <p>الرصيد المدفوع: {invoice.total}</p>
-        <p>اجمالي الحساب: {invoice.toal}</p>
+        <p>عدد الاصناف:<span style={{border: '2px solid black', padding: "5px"}}>{invoice.lenth}</span></p>
         <p>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>رقم الهاتف: 01113865582</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>شكراً لتعاملكم معنا!</p>

@@ -22,42 +22,55 @@ function Reports() {
     const [toDate, setToDate] = useState("");
     const [filterType, setFilterType] = useState("all");
     const [reports, setReports] = useState([]);
-    const [openCard, setOpenCard] = useState(null);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [isDeleting, setIsDeleting] = useState(false);            
+    const [isDeleting, setIsDeleting] = useState(false); 
+    const [source, setSource] = useState("dailySales"); // ✅ مصدر البيانات   
+    const [searchPhone, setSearchPhone] = useState(""); // ✅ البحث برقم الهاتف 
     const shop = typeof window !== "undefined" ? localStorage.getItem("shop") : "";
 
     useEffect(() => {
         if (!shop) return;
 
-        const q = query(collection(db, "reports"), where("shop", "==", shop));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const allReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let unsubscribe;
 
-            const filteredByDate = allReports.filter((report) => {
-                if (!report.date) return false;
-                const reportTime = new Date(report.date.seconds * 1000).getTime();
+        const applyFilters = (allReports) => {
+            // فلترة التاريخ
+            let filteredByDate = allReports;
+            if (fromDate || toDate) {
+                filteredByDate = allReports.filter((report) => {
+                    if (!report.date) return false;
+                    const reportTime = new Date(report.date.seconds * 1000).getTime();
 
-                let fromTime = fromDate ? new Date(fromDate) : null;
-                let toTime = toDate ? new Date(toDate) : null;
+                    let fromTime = fromDate ? new Date(fromDate) : null;
+                    let toTime = toDate ? new Date(toDate) : null;
 
-                if (fromTime) {
-                    fromTime.setHours(0, 0, 0, 0);
-                    fromTime = fromTime.getTime();
-                }
+                    if (fromTime) {
+                        fromTime.setHours(0, 0, 0, 0);
+                        fromTime = fromTime.getTime();
+                    }
 
-                if (toTime) {
-                    toTime.setHours(23, 59, 59, 999);
-                    toTime = toTime.getTime();
-                }
+                    if (toTime) {
+                        toTime.setHours(23, 59, 59, 999);
+                        toTime = toTime.getTime();
+                    }
 
-                if (fromTime && toTime) return reportTime >= fromTime && reportTime <= toTime;
-                if (fromTime) return reportTime >= fromTime;
+                    if (fromTime && toTime) return reportTime >= fromTime && reportTime <= toTime;
+                    if (fromTime) return reportTime >= fromTime;
 
-                return true;
-            });
+                    return true;
+                });
+            }
 
-            const filteredReports = filteredByDate.map((report) => {
+            // فلترة رقم الهاتف
+            let filteredByPhone = filteredByDate;
+            if (searchPhone.trim()) {
+                filteredByPhone = filteredByDate.filter((report) =>
+                    report.phone?.toString().includes(searchPhone.trim())
+                );
+            }
+
+            // فلترة النوع
+            const filteredReports = filteredByPhone.map((report) => {
                 if (filterType === "all") return report;
                 return {
                     ...report,
@@ -65,101 +78,119 @@ function Reports() {
                 };
             }).filter(report => report.cart?.length);
 
-            setReports(filteredReports);
-
+            // حساب الإجمالي
             let total = 0;
             filteredReports.forEach((report) => {
                 report.cart?.forEach((item) => {
                     total += item.sellPrice * item.quantity;
                 });
             });
+
+            setReports(filteredReports);
             setTotalAmount(total);
-        });
+        };
 
-        return () => unsubscribe();
-    }, [fromDate, toDate, filterType, shop]);
-
-
-const handleDeleteSingleProduct = async (reportId, productCode) => {
-    if (isDeleting) return; // منع التكرار
-    setIsDeleting(true);
-
-    try {
-        const reportRef = doc(db, 'reports', reportId);
-        const reportSnap = await getDoc(reportRef);
-
-        if (!reportSnap.exists()) {
-            alert("هذا التقرير غير موجود");
-            setIsDeleting(false);
-            return;
-        }
-
-        const reportData = reportSnap.data();
-        const cartItems = reportData.cart;
-        const shop = reportData.shop;
-
-        const updatedCart = cartItems.filter((item) => item.code !== productCode);
-        const deletedItem = cartItems.find((item) => item.code === productCode);
-
-        if (!deletedItem) {
-            alert("هذا المنتج غير موجود في التقرير");
-            setIsDeleting(false);
-            return;
-        }
-
-        const q = query(
-            collection(db, "products"),
-            where("code", "==", deletedItem.code),
-            where("shop", "==", shop)
-        );
-
-        const snapshot = await getDocs(q);
-
-        if (!snapshot.empty) {
-            const productDoc = snapshot.docs[0];
-            const currentQty = productDoc.data().quantity || 0;
-
-            await updateDoc(productDoc.ref, {
-                quantity: currentQty + deletedItem.quantity,
+        if (fromDate || toDate) {
+            setSource("reports");
+            const q = query(collection(db, "reports"), where("shop", "==", shop));
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                const allReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                applyFilters(allReports);
             });
         } else {
-            await addDoc(collection(db, "products"), {
-                name: deletedItem.name ?? "بدون اسم",
-                code: deletedItem.code ?? 0,
-                serial: deletedItem.serial ?? 0,
-                sellPrice: deletedItem.sellPrice ?? deletedItem.price ?? 0,
-                buyPrice: deletedItem.buyPrice,
-                type: deletedItem.type ?? "product",
-                sim: deletedItem.sim || 0,
-                battery: deletedItem.battery || 0,
-                storage: deletedItem.storage || 0,
-                color: deletedItem.color || 0,
-                box: deletedItem.box || 0,
-                condition: deletedItem.condition || 0,
-                tax: deletedItem.tax || 0,
-                quantity: deletedItem.quantity,
-                date: new Date(),
-                shop: deletedItem.shop ?? shop,
+            setSource("dailySales");
+            const q = query(collection(db, "dailySales"), where("shop", "==", shop));
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                const allReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                applyFilters(allReports);
             });
         }
 
-        if (updatedCart.length === 0) {
-            await deleteDoc(reportRef);
-            alert("تم حذف التقرير لأنه لم يتبق فيه منتجات");
-        } else {
-            await updateDoc(reportRef, {
-                cart: updatedCart,
-            });
-            alert("تم حذف المنتج من التقرير واسترجاعه إلى المخزون");
+        return () => unsubscribe && unsubscribe();
+    }, [fromDate, toDate, filterType, shop, searchPhone]);
+
+    // ✅ الدالة المعدلة
+    const handleDeleteSingleProduct = async (reportId, productCode) => {
+        if (isDeleting) return; 
+        setIsDeleting(true);
+
+        try {
+            const reportRef = doc(db, source, reportId); // ✅ ديناميكي حسب المصدر
+            const reportSnap = await getDoc(reportRef);
+
+            if (!reportSnap.exists()) {
+                alert("هذا التقرير غير موجود");
+                setIsDeleting(false);
+                return;
+            }
+
+            const reportData = reportSnap.data();
+            const cartItems = reportData.cart;
+            const shop = reportData.shop;
+
+            const updatedCart = cartItems.filter((item) => item.code !== productCode);
+            const deletedItem = cartItems.find((item) => item.code === productCode);
+
+            if (!deletedItem) {
+                alert("هذا المنتج غير موجود في التقرير");
+                setIsDeleting(false);
+                return;
+            }
+
+            // ✅ استرجاع الكمية
+            const q = query(
+                collection(db, "products"),
+                where("code", "==", deletedItem.code),
+                where("shop", "==", shop)
+            );
+
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                const productDoc = snapshot.docs[0];
+                const currentQty = productDoc.data().quantity || 0;
+
+                await updateDoc(productDoc.ref, {
+                    quantity: currentQty + deletedItem.quantity,
+                });
+            } else {
+                await addDoc(collection(db, "products"), {
+                    name: deletedItem.name ?? "بدون اسم",
+                    code: deletedItem.code ?? 0,
+                    serial: deletedItem.serial ?? 0,
+                    sellPrice: deletedItem.sellPrice ?? deletedItem.price ?? 0,
+                    buyPrice: deletedItem.buyPrice,
+                    type: deletedItem.type ?? "product",
+                    sim: deletedItem.sim || 0,
+                    battery: deletedItem.battery || 0,
+                    storage: deletedItem.storage || 0,
+                    color: deletedItem.color || 0,
+                    box: deletedItem.box || 0,
+                    condition: deletedItem.condition || 0,
+                    tax: deletedItem.tax || 0,
+                    quantity: deletedItem.quantity,
+                    date: new Date(),
+                    shop: deletedItem.shop ?? shop,
+                });
+            }
+
+            if (updatedCart.length === 0) {
+                await deleteDoc(reportRef);
+                alert("تم حذف التقرير لأنه لم يتبق فيه منتجات");
+            } else {
+                await updateDoc(reportRef, {
+                    cart: updatedCart,
+                });
+                alert("تم حذف المنتج من التقرير واسترجاعه إلى المخزون");
+            }
+
+        } catch (error) {
+            console.error("خطأ أثناء الحذف:", error);
+            alert("حدث خطأ أثناء حذف المنتج");
         }
 
-    } catch (error) {
-        console.error("خطأ أثناء الحذف:", error);
-        alert("حدث خطأ أثناء حذف المنتج");
-    }
-
-    setIsDeleting(false);
-};
+        setIsDeleting(false);
+    };
 
 
     return (
@@ -179,6 +210,14 @@ const handleDeleteSingleProduct = async (reportId, productCode) => {
                             <option value="product">المنتجات</option>
                             <option value="phone">الموبايلات</option>
                         </select>
+                    </div>
+                    <div className="inputContainer">
+                        <input 
+                            type="text" 
+                            placeholder="بحث برقم العميل" 
+                            value={searchPhone} 
+                            onChange={(e) => setSearchPhone(e.target.value)} 
+                        />
                     </div>
                 </div>
 
@@ -210,7 +249,12 @@ const handleDeleteSingleProduct = async (reportId, productCode) => {
                                         <td>{report.clientName}</td>
                                         <td>{report.phone}</td>
                                         <td>
-                                            <button className={styles.delBtn} onClick={() => handleDeleteSingleProduct(report.id, item.code)}><FaTrashAlt /></button>
+                                            <button 
+                                                className={styles.delBtn} 
+                                                onClick={() => handleDeleteSingleProduct(report.id, item.code)}
+                                            >
+                                                <FaTrashAlt />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -224,40 +268,6 @@ const handleDeleteSingleProduct = async (reportId, productCode) => {
                             </tr>
                         </tfoot>
                     </table>
-                </div>
-
-                <div className="moblieCardContainer">
-                    {reports.map((report, reportIndex) =>
-                        report.cart?.map((item, index) => {
-                            const cardIndex = `${reportIndex}-${index}`;
-                            return (
-                                <div
-                                    key={cardIndex}
-                                    onClick={() => setOpenCard(openCard === cardIndex ? null : cardIndex)}
-                                    className={openCard === cardIndex ? 'card open' : 'card'}
-                                >
-                                    <div className="cardHead">
-                                        <h3>{item.name}</h3>
-                                    </div>
-                                    <hr />
-                                    <div className="cardBody">
-                                        <strong>كود المنتج: {item.code || '-'}</strong>
-                                        <strong>سعر الشراء: {item.buyPrice || '-'} EGP</strong>
-                                        <strong>سعر البيع: {item.sellPrice || '-'} EGP</strong>
-                                        <strong>الكمية: {item.quantity || '-'}</strong>
-                                        <strong>البطارية: {item.battery || '-'}</strong>
-                                        <strong>المساحة: {item.storage || '-'}</strong>
-                                        <strong>اللون: {item.color || '-'}</strong>
-                                        <strong>السريال: {item.serial || '-'}</strong>
-                                        <strong>الضريبة: {item.tax || '-'}</strong>
-                                        <strong>الكرتونة: {item.box || '-'}</strong>
-                                        <strong>الحالة: {item.condition || '-'}</strong>
-                                        <strong>الشريحة: {item.sim || '-'}</strong>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
                 </div>
             </div>
         </div>

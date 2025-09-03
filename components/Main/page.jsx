@@ -204,7 +204,8 @@ function Main() {
         employee: selectedEmployee,
       };
 
-      await addDoc(collection(db, "reports"), saleData);
+      // ✅ التسجيل في dailySales بدل reports
+      await addDoc(collection(db, "dailySales"), saleData);
       await addDoc(collection(db, "employeesReports"), saleData);
 
       if (typeof window !== "undefined") {
@@ -232,6 +233,34 @@ function Main() {
     setIsSaving(false);
     setSavePage(false);
     router.push('/resete');
+  };
+
+  // ✅ زرار تقفيل اليوم
+  const handleCloseDay = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "dailySales"));
+
+      if (snapshot.empty) {
+        alert("لا يوجد عمليات لتقفيلها اليوم");
+        return;
+      }
+
+      // نقل البيانات من dailySales إلى reports
+      for (const docSnap of snapshot.docs) {
+        const data = docSnap.data();
+        await addDoc(collection(db, "reports"), data);
+      }
+
+      // مسح كل العمليات من dailySales
+      for (const docSnap of snapshot.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+
+      alert("تم تقفيل اليوم بنجاح ✅");
+    } catch (error) {
+      console.error("خطأ أثناء تقفيل اليوم:", error);
+      alert("حدث خطأ أثناء تقفيل اليوم");
+    }
   };
 
   return (
@@ -409,6 +438,9 @@ function Main() {
             </div>
             <div className={styles.resetBtns}>
               <button onClick={() => setSavePage(true)}>حفظ</button>
+              <button onClick={handleCloseDay} style={{ backgroundColor: "red", color: "white" }}>
+                تقفيل اليوم
+              </button>
             </div>
           </div>
         </div>
@@ -418,3 +450,4 @@ function Main() {
 }
 
 export default Main;
+  
