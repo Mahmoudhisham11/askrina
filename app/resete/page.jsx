@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import Image from "next/image";
 import resetImage from "../../public/images/logo.png";
 import { useRouter } from "next/navigation";
+import { QRCodeCanvas } from "qrcode.react"; // ✅ استيراد مكتبة QRCode
 
 function Resete() {
   const router = useRouter();
@@ -68,6 +69,7 @@ function Resete() {
           </tfoot>
         </table>
       </div>
+
       <div className={styles.text}>
         <p>المدفوع: {invoice.total}$</p>
         <p>المتبقي: 0.0</p>
@@ -75,6 +77,14 @@ function Resete() {
         <p>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>رقم الهاتف: 01113865582</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>شكراً لتعاملكم معنا!</p>
+      </div>
+
+      {/* ✅ إضافة QR Code */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+        <QRCodeCanvas 
+          value="https://www.tiktok.com/@s3edahmed1"
+          size={100}
+        />
       </div>
 
       <div className={styles.btn}>
