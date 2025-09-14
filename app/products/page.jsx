@@ -7,7 +7,7 @@ import { GiMoneyStack } from "react-icons/gi";
 import { CiSearch } from "react-icons/ci";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { GoNumber } from "react-icons/go";
-import { MdOutlinePersonOutline } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
 import {
   collection,
   addDoc,
@@ -17,18 +17,18 @@ import {
   query,
   where,
   onSnapshot,
-  Timestamp
+  Timestamp,
+  updateDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 
 function Products() {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(false); // false = عرض المنتجات, true = إضافة, "edit" = تعديل
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [openCard, setOpenCard] = useState('')
   const [searchCode, setSearchCode] = useState("");
-  const [totalBuy, setTotalBuy] = useState(0); // ✅ إجمالي الشراء
-  const [totalSell, setTotalSell] = useState(0); // ✅ إجمالي البيع
+  const [totalBuy, setTotalBuy] = useState(0);
+  const [totalSell, setTotalSell] = useState(0);
 
   const [form, setForm] = useState({
     name: "",
@@ -36,6 +36,8 @@ function Products() {
     sellPrice: "",
     quantity: "",
   });
+
+  const [editId, setEditId] = useState(null); // ✅ ID المنتج اللي بيتعدل
 
   useEffect(() => {
     const shop = localStorage.getItem("shop");
@@ -49,7 +51,7 @@ function Products() {
       }));
       setProducts(data);
 
-      // ✅ حساب الإجماليات
+      // حساب الإجماليات
       let totalBuyAmount = 0;
       let totalSellAmount = 0;
       data.forEach((product) => {
@@ -109,7 +111,7 @@ function Products() {
     });
 
     alert("✅ تم إضافة المنتج");
-    setForm({ name: "", buyPrice: "", sellPrice: "", quantity: ""});
+    setForm({ name: "", buyPrice: "", sellPrice: "", quantity: "" });
   };
 
   const handleDelete = async (id) => {
@@ -120,104 +122,46 @@ function Products() {
     }
   };
 
-const handlePrintLabel = (product) => {
-  const printWindow = window.open('', '', 'width=400,height=300');
+  // ✅ تجهيز بيانات المنتج للتعديل
+  const handleEdit = (product) => {
+    setEditId(product.id);
+    setForm({
+      name: product.name,
+      buyPrice: product.buyPrice,
+      sellPrice: product.sellPrice,
+      quantity: product.quantity,
+    });
+    setActive("edit"); // افتح فورم التعديل
+  };
 
-  const htmlContent = `
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-      <style>
-        @media print {
-          @page { size: auto; margin: 0; }
-          body { margin: 0; padding: 0; }
-        }
-        .label {
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          padding: 2mm;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          font-family: Arial, sans-serif;
-          font-size: 8pt;
-          gap: 1mm;
-          page-break-inside: avoid;
-          overflow: hidden;
-          text-align: center;
-        }
-        .name {
-          max-width: 100%;
-          font-weight: 600;
-          line-height: 1.1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .content {
-          display: flex;
-          gap: 2mm;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-          font-size: 7pt;
-        }
-        svg.barcode {
-          width: 40mm;
-          height: 12mm;
-        }
-        .barcode rect, .barcode path { shape-rendering: crispEdges; }
-      </style>
-    </head>
-    <body>
-      <div class="label">
-        <div class="name">${product.name ?? ''}</div>
-        <div class="content">
-          <div><strong>سعر البيع:</strong> ${product.sellPrice ?? ''} جنية</div>
-          <div><strong>الكود:</strong> ${product.code ?? ''}</div>
-        </div>
-        <svg id="barcode" class="barcode"></svg>
-      </div>
+  // ✅ تحديث المنتج
+  const handleUpdateProduct = async () => {
+    if (!editId) return;
 
-      <script>
-        window.onload = function () {
-          JsBarcode("#barcode", "${'${product.code}'}", {
-            format: "CODE128",
-            displayValue: false,
-            margin: 0
-          });
-          setTimeout(() => {
-            window.print();
-            window.onafterprint = () => window.close();
-          }, 100);
-        };
-      </script>
-    </body>
-  </html>
-  `;
-
-  printWindow.document.write(htmlContent);
-  printWindow.document.close();
-};
-
-
-
-  
-
-
-
+    try {
+      const productRef = doc(db, "products", editId);
+      await updateDoc(productRef, {
+        name: form.name,
+        buyPrice: Number(form.buyPrice),
+        sellPrice: Number(form.sellPrice),
+        quantity: Number(form.quantity),
+      });
+      alert("✅ تم تحديث المنتج");
+      setEditId(null);
+      setForm({ name: "", buyPrice: "", sellPrice: "", quantity: "" });
+      setActive(false);
+    } catch (err) {
+      console.error("❌ خطأ أثناء التحديث:", err);
+    }
+  };
 
   return (
     <div className={styles.products}>
       <SideBar />
       <div className={styles.content}>
         <div className={styles.btns}>
-          <button onClick={() => setActive(false)}>كل المنتجات</button>
-          <button onClick={() => setActive(true)}>اضف منتج جديد</button>
+          <button onClick={() => { setActive(false); setEditId(null); }}>كل المنتجات</button>
+          <button onClick={() => { setActive(true); setEditId(null); }}>اضف منتج جديد</button>
         </div>
 
         {/* عرض المنتجات */}
@@ -255,8 +199,7 @@ const handlePrintLabel = (product) => {
                   <th>سعر البيع</th>
                   <th>الكمية</th>
                   <th>التاريخ</th>
-                  <th>حذف</th>
-                  <th>طباعة</th>
+                  <th>خيارات</th>
                 </tr>
               </thead>
               <tbody>
@@ -268,13 +211,14 @@ const handlePrintLabel = (product) => {
                     <td>{product.sellPrice} EGP</td>
                     <td>{product.quantity}</td>
                     <td>{product.date?.toDate().toLocaleDateString("ar-EG")}</td>
-                    <td>
-                      <button className={styles.delBtn} onClick={() => handleDelete(product.id)}>
+                    <td className={styles.actions}>
+                      <button onClick={() => handleDelete(product.id)}>
                         <FaRegTrashAlt />
                       </button>
-                    </td>
-                    <td>
-                      <button className={styles.delBtn} onClick={() => handlePrintLabel(product)}>
+                      <button onClick={() => handleEdit(product)}>
+                        <MdOutlineEdit />
+                      </button>
+                      <button onClick={() => handlePrintLabel(product)}>
                         🖨️
                       </button>
                     </td>
@@ -283,78 +227,64 @@ const handlePrintLabel = (product) => {
               </tbody>
             </table>
           </div>
+        </div>
 
-          <div className="moblieCardContainer">
-            {filteredProducts.map((product, index) => (
-              <div onClick={() => setOpenCard(openCard === index ? null : index)} className={openCard === index ? 'card open' : 'card'} key={product.id}>
-                <div className="cardHead">
-                  <h3>{product.name}</h3>
-                  <div className="btns">
-                    <button onClick={() => handlePrintLabel(product)} className={styles.print}>🖨️</button>
-                    <button className={styles.delBtn} onClick={() => handleDelete(product.id)}><FaRegTrashAlt /></button>
-                  </div>
-                </div>
-                <hr />
-                <div className="cardBody">
-                  <strong>كود المنتج: {product.code}</strong>
-                  <strong>سعر الشراء: {product.buyPrice} EGP</strong>
-                  <strong>سعر البيع: {product.sellPrice} EGP</strong>
-                  <strong>الكمية: {product.quantity}</strong>
-                  <strong>التاريخ: {product.date?.toDate().toLocaleDateString("ar-EG")}</strong>
-                </div>
+        {/* إضافة أو تعديل منتج */}
+        {(active === true || active === "edit") && (
+          <div className={styles.addContainer}>
+            <div className={styles.inputBox}>
+              <div className="inputContainer">
+                <label><MdDriveFileRenameOutline /></label>
+                <input
+                  type="text"
+                  placeholder="اسم المنتج"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* إضافة منتج جديد */}
-        <div className={styles.addContainer} style={{ display: active ? "flex" : "none" }}>
-          <div className={styles.inputBox}>
-            <div className="inputContainer">
-              <label><MdDriveFileRenameOutline /></label>
-              <input
-                type="text"
-                placeholder="اسم المنتج"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
             </div>
-          </div>
-          <div className={styles.inputBox}>
-            <div className="inputContainer">
-              <label><GiMoneyStack /></label>
-              <input
-                type="number"
-                placeholder="سعر الشراء"
-                value={form.buyPrice}
-                onChange={(e) => setForm({ ...form, buyPrice: e.target.value })}
-              />
+            <div className={styles.inputBox}>
+              <div className="inputContainer">
+                <label><GiMoneyStack /></label>
+                <input
+                  type="number"
+                  placeholder="سعر الشراء"
+                  value={form.buyPrice}
+                  onChange={(e) => setForm({ ...form, buyPrice: e.target.value })}
+                />
+              </div>
+              <div className="inputContainer">
+                <label><GiMoneyStack /></label>
+                <input
+                  type="number"
+                  placeholder="سعر البيع"
+                  value={form.sellPrice}
+                  onChange={(e) => setForm({ ...form, sellPrice: e.target.value })}
+                />
+              </div>
             </div>
-            <div className="inputContainer">
-              <label><GiMoneyStack /></label>
-              <input
-                type="number"
-                placeholder="سعر البيع"
-                value={form.sellPrice}
-                onChange={(e) => setForm({ ...form, sellPrice: e.target.value })}
-              />
+            <div className={styles.inputBox}>
+              <div className="inputContainer">
+                <label><GoNumber /></label>
+                <input
+                  type="number"
+                  placeholder="الكمية"
+                  value={form.quantity}
+                  onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                />
+              </div>
             </div>
+            {active === "edit" ? (
+              <button className={styles.addBtn} onClick={handleUpdateProduct}>
+                تحديث المنتج
+              </button>
+            ) : (
+              <button className={styles.addBtn} onClick={handleAddProduct}>
+                اضف المنتج
+              </button>
+            )}
           </div>
-          <div className={styles.inputBox}>
-            <div className="inputContainer">
-              <label><GoNumber /></label>
-              <input
-                type="number"
-                placeholder="الكمية"
-                value={form.quantity}
-                onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-              />
-            </div>
-          </div>
-          <button className={styles.addBtn} onClick={handleAddProduct}>
-            اضف المنتج
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

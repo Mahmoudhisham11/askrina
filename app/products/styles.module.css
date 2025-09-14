@@ -50,6 +50,9 @@
 }
 .tableContainer {
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .addContainer {
     width: 100%;
@@ -83,16 +86,43 @@
 .addBtn:hover {
     background-color: var(--hover-color);
 }
-.delBtn {
-    background-color: transparent;
-    color: red;
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.actions button {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
     font-size: 20px;
     border: none;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .3s ;
+}
+.actions button:first-child {
+    background-color: rgba(243, 83, 83, 0.411);
+    color: red;
+}
+.actions button:nth-child(2) {
+    background-color: #3570aa54;
+    color: var(--main-color);
+}
+.actions button:first-child:hover {
+    background-color: red;
+    color: white;
+}
+.actions button:nth-child(2):hover {
+    background-color: var(--main-color);
+    color: white;
 }
 
 @media(max-width: 767px) {
     .tableContainer {
-        display: none;
+        overflow: scroll;
     }
 }

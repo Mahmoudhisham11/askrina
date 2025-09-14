@@ -47,8 +47,10 @@
     transition: .3s;
 }
 .actionLinks:hover {
-    background-color: var(--main-color);
-    color: white;
+    background-color: white;
+}
+.actionLinks:hover span:first-child {
+    color: var(--main-color);
 }
 .closeBtn {
     display: none;

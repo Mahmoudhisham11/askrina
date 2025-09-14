@@ -121,22 +121,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    gap: 10px;
+    gap: 5px;
 }
-.delBtn {
-    background-color: transparent;
+.actionBtns button {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .3s ;
+}
+.actionBtns button:first-child {
+    background-color: rgba(243, 83, 83, 0.411);
     color: red;
-    font-size: 20px;
-    border: none;
-    cursor: pointer;
 }
-.print {
-    border: none;
-    background-color: transparent;
-    font-size: 20px;
-    cursor: pointer;
+.actionBtns button:nth-child(2) {
+    background-color: #3570aa54;
+    color: var(--main-color);
 }
+.actionBtns button:first-child:hover {
+    background-color: red;
+    color: white;
+}
+.actionBtns button:nth-child(2):hover {
+    background-color: var(--main-color);
+    color: white;
+}
+
 .totals {
     width: 100%;
     display: flex;

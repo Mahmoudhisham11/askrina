@@ -87,6 +87,6 @@
 
 @media(max-width: 767px) {
     .tableContainer {
-        display: none;
+        overflow: scroll;
     }
 }

@@ -77,13 +77,14 @@ function Main() {
   }, []);
 
   useEffect(() => {
-    const q = query(collection(db, 'employees'))
+    if (!shop) return;
+    const q = query(collection(db, 'employees'), where('shop', '==', shop))
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}))
       setEmployess(data)
     })
-    return () => unsubscribe
-  }, [])
+    return () => unsubscribe();
+  }, [shop])
 
   const handleAddToCart = async (product) => {
     const customPrice = Number(customPrices[product.id]);
@@ -132,7 +133,6 @@ function Main() {
 
   const totalAmount = cart.reduce((acc, item) => acc + item.total, 0);
 
-  // ✅ البحث بالكود (جزئي + بدون حساسية حالة الأحرف + إزالة المسافات الزائدة)
   const filteredProducts = products.filter((p) => {
     const search = searchCode.trim().toLowerCase();
     const matchCode = search === "" || (p.code && p.code.toString().toLowerCase().includes(search));
@@ -155,7 +155,7 @@ function Main() {
     const clientName = nameRef.current.value;
     const phone = phoneRef.current.value;
 
-    if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "" || !selectedEmployee) {
+    if (cart.length === 0 || clientName.trim() === "" || phone.trim() === "") {
       alert("يرجى ملء جميع الحقول، اختيار الموظف، وإضافة منتجات إلى السلة");
       setIsSaving(false);
       return;
@@ -204,7 +204,6 @@ function Main() {
         employee: selectedEmployee,
       };
 
-      // ✅ التسجيل في dailySales بدل reports
       await addDoc(collection(db, "dailySales"), saleData);
       await addDoc(collection(db, "employeesReports"), saleData);
 
@@ -214,14 +213,15 @@ function Main() {
           clientName,
           phone,
           total,
-          lenth: cart.length,
+          length: cart.length,
           date: new Date(),
         }));
       }
 
-      const cartSnapshot = await getDocs(collection(db, "cart"));
-      for (const doc of cartSnapshot.docs) {
-        await deleteDoc(doc.ref);
+      const qCart = query(collection(db, "cart"), where('shop', '==', shop))
+      const cartSnapshot = await getDocs(qCart);
+      for (const docSnap of cartSnapshot.docs) {
+        await deleteDoc(docSnap.ref);
       }
 
       alert("تم حفظ التقرير بنجاح");
@@ -235,23 +235,21 @@ function Main() {
     router.push('/resete');
   };
 
-  // ✅ زرار تقفيل اليوم
   const handleCloseDay = async () => {
     try {
-      const snapshot = await getDocs(collection(db, "dailySales"));
+      const q = query(collection(db, "dailySales"), where("shop", "==", shop));
+      const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
         alert("لا يوجد عمليات لتقفيلها اليوم");
         return;
       }
 
-      // نقل البيانات من dailySales إلى reports
       for (const docSnap of snapshot.docs) {
         const data = docSnap.data();
         await addDoc(collection(db, "reports"), data);
       }
 
-      // مسح كل العمليات من dailySales
       for (const docSnap of snapshot.docs) {
         await deleteDoc(docSnap.ref);
       }
@@ -372,7 +370,7 @@ function Main() {
                 <th>السريال</th>
                 <th>الكمية</th>
                 <th className={styles.lastRow}>تحديد</th>
-                <th className={styles.lastRow}>تفاعل</th>
+                <th className={styles.lastRow}>اضف</th>
               </tr>
             </thead>
             <tbody>
@@ -385,6 +383,7 @@ function Main() {
                   <td>{product.quantity}</td>
                   <td className={styles.lastRow}>
                     <input
+                      className={styles.tableInput}
                       type="number"
                       placeholder="سعر مخصص"
                       value={customPrices[product.id] || ""}
@@ -404,10 +403,11 @@ function Main() {
           </table>
         </div>
        </div>
+
       <div className={styles.resetContainer}>
         <div className={styles.reset}>
           <div className={styles.resetTitle}>
-            <h3>الفاتورة</h3>
+            <h3>محتوى الفاتورة</h3>
             <hr />
           </div>
           <div className={styles.orderBox}>
@@ -438,7 +438,7 @@ function Main() {
             </div>
             <div className={styles.resetBtns}>
               <button onClick={() => setSavePage(true)}>حفظ</button>
-              <button onClick={handleCloseDay} style={{ backgroundColor: "red", color: "white" }}>
+              <button onClick={handleCloseDay}>
                 تقفيل اليوم
               </button>
             </div>
@@ -450,4 +450,3 @@ function Main() {
 }
 
 export default Main;
-  

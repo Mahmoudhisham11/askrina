@@ -15,7 +15,7 @@ import {
     addDoc,
 } from "firebase/firestore";
 import { db } from "@/app/firebase";
-import { FaTrashAlt } from "react-icons/fa";
+import { TfiReload } from "react-icons/tfi";
 
 function Reports() {
     const [fromDate, setFromDate] = useState("");
@@ -110,6 +110,7 @@ function Reports() {
     }, [fromDate, toDate, filterType, shop, searchPhone]);
 
     // ✅ الدالة المعدلة
+    // ✅ الدالة بعد التعديل
     const handleDeleteSingleProduct = async (reportId, productCode) => {
         if (isDeleting) return; 
         setIsDeleting(true);
@@ -154,24 +155,33 @@ function Reports() {
                     quantity: currentQty + deletedItem.quantity,
                 });
             } else {
-                await addDoc(collection(db, "products"), {
+                // ✅ تجهيز بيانات المرتجع حسب النوع
+                let newProduct = {
                     name: deletedItem.name ?? "بدون اسم",
                     code: deletedItem.code ?? 0,
-                    serial: deletedItem.serial ?? 0,
                     sellPrice: deletedItem.sellPrice ?? deletedItem.price ?? 0,
-                    buyPrice: deletedItem.buyPrice,
+                    buyPrice: deletedItem.buyPrice ?? 0,
                     type: deletedItem.type ?? "product",
-                    sim: deletedItem.sim || 0,
-                    battery: deletedItem.battery || 0,
-                    storage: deletedItem.storage || 0,
-                    color: deletedItem.color || 0,
-                    box: deletedItem.box || 0,
-                    condition: deletedItem.condition || 0,
-                    tax: deletedItem.tax || 0,
                     quantity: deletedItem.quantity,
                     date: new Date(),
                     shop: deletedItem.shop ?? shop,
-                });
+                };
+
+                if (deletedItem.type === "phone") {
+                    newProduct = {
+                        ...newProduct,
+                        serial: deletedItem.serial ?? 0,
+                        sim: deletedItem.sim || 0,
+                        battery: deletedItem.battery || 0,
+                        storage: deletedItem.storage || 0,
+                        color: deletedItem.color || 0,
+                        box: deletedItem.box || 0,
+                        condition: deletedItem.condition || 0,
+                        tax: deletedItem.tax || 0,
+                    };
+                }
+
+                await addDoc(collection(db, "products"), newProduct);
             }
 
             if (updatedCart.length === 0) {
@@ -193,31 +203,36 @@ function Reports() {
     };
 
 
+
     return (
         <div className={styles.reports}>
             <SideBar />
             <div className={styles.content}>
                 <div className={styles.filterBar}>
-                    <div className="inputContainer">
-                        <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                    <div className={styles.inputBox}>
+                        <div className="inputContainer">
+                            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                        </div>
+                        <div className="inputContainer">
+                            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />    
+                        </div>
                     </div>
-                    <div className="inputContainer">
-                        <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />    
-                    </div>
-                    <div className="inputContainer">
-                        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-                            <option value="all">الكل</option>
-                            <option value="product">المنتجات</option>
-                            <option value="phone">الموبايلات</option>
-                        </select>
-                    </div>
-                    <div className="inputContainer">
-                        <input 
-                            type="text" 
-                            placeholder="بحث برقم العميل" 
-                            value={searchPhone} 
-                            onChange={(e) => setSearchPhone(e.target.value)} 
-                        />
+                    <div className={styles.inputBox}>
+                        <div className="inputContainer">
+                            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                                <option value="all">الكل</option>
+                                <option value="product">المنتجات</option>
+                                <option value="phone">الموبايلات</option>
+                            </select>
+                        </div>
+                        <div className="inputContainer">
+                            <input 
+                                type="text" 
+                                placeholder="بحث برقم العميل" 
+                                value={searchPhone} 
+                                onChange={(e) => setSearchPhone(e.target.value)} 
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -253,7 +268,7 @@ function Reports() {
                                                 className={styles.delBtn} 
                                                 onClick={() => handleDeleteSingleProduct(report.id, item.code)}
                                             >
-                                                <FaTrashAlt />
+                                                <TfiReload />
                                             </button>
                                         </td>
                                     </tr>
