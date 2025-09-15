@@ -106,7 +106,6 @@ function Products() {
       quantity: Number(form.quantity),
       date: Timestamp.now(),
       shop: shop,
-      userEmail: localStorage.getItem('email'),
       type: "product"
     });
 
