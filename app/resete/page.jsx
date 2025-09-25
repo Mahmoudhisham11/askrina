@@ -10,11 +10,22 @@ function Resete() {
   const router = useRouter();
   const [invoice, setInvoice] = useState(null);
 
-  // Load invoice from localStorage
+  // ✅ نجيب التاريخ الحالي
+  const [currentDate, setCurrentDate] = useState("");
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const lastInvoice = localStorage.getItem("lastInvoice");
     if (lastInvoice) setInvoice(JSON.parse(lastInvoice));
+
+    // ✅ صياغة التاريخ
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("ar-EG", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    setCurrentDate(formattedDate);
   }, []);
 
   const handlePrint = () => {
@@ -40,6 +51,8 @@ function Resete() {
       {/* عرض الفاتورة على الشاشة */}
       <div className={styles.invoice}>
         <h3 style={{ textAlign: 'center' }}>فاتورة مبيعات</h3>
+        {/* ✅ التاريخ */}
+        <p><strong>التاريخ:</strong> {currentDate}</p>
         <p><strong>العميل:</strong> {invoice.clientName}</p>
         <p><strong>الهاتف:</strong> {invoice.phone}</p>
 
