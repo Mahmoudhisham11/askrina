@@ -2,17 +2,68 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Tajawal";
+  font-family: 'Tajawal';
 }
+
 :root {
+  /* Theme Colors - Light Mode */
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --success: #22C55E;
+  --warning: #FACC15;
+  --danger: #EF4444;
+  
+  --background: #F8FAFC;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #E5E7EB;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --icon: #475569;
+  
+  /* Typography */
+  --font-family: 'Tajawal', sans-serif;
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 22px;
+  --font-size-xl: 28px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  /* Shadow */
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+  
+  /* Legacy variables for existing components */
   --main-color: #1976d2;
   --hover-color: #0f5499;
-  --background: #eef0f1;
   --text-color: #2e2e2e;
 }
+
+[data-theme="dark"] {
+  --background: #0F172A;
+  --surface: #020617;
+  --card: #020617;
+  --border: #1E293B;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --icon: #CBD5E1;
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.3);
+}
+
 body {
-  direction: rtl;
+  font-family: var(--font-family);
   background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  direction: rtl;
+  text-align: right;
 }
 .main {
   width: 100%;
@@ -104,8 +155,98 @@ tfoot {
     size: auto;
     margin: 0;
   }
+  
   body {
     padding: 0;
     margin: 0;
+  }
+  
+  /* إخفاء جميع العناصر عند الطباعة ما عدا عنصر الطباعة المنفصل */
+  body > *:not(.barcode-print-root) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* عرض عنصر الطباعة فقط */
+  .barcode-print-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    visibility: visible !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* أنماط محتوى الباركود */
+  .barcode-print-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    background: white !important;
+    min-height: 100vh !important;
+  }
+  
+  .barcode-label {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    margin-bottom: 12px !important;
+    color: #000 !important;
+    text-align: center !important;
+  }
+  
+  .barcode {
+    margin: 16px 0 !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .barcode svg {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .barcode-info {
+    margin-top: 16px !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    visibility: visible !important;
+  }
+  
+  .info-row {
+    padding: 6px 0 !important;
+    font-size: 14px !important;
+    color: #000 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+  
+  .info-row:last-child {
+    border-bottom: none !important;
+  }
+  
+  .info-label,
+  .info-value {
+    color: #000 !important;
+    font-weight: 500 !important;
+    font-family: 'Courier New', monospace !important;
+    text-transform: uppercase !important;
+  }
+  
+  .info-value {
+    direction: ltr !important;
+    text-align: left !important;
   }
 }

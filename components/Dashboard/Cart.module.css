@@ -1,0 +1,1069 @@
+/* Container */
+.container {
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  transition: background-color 200ms ease-in-out;
+  box-shadow: var(--shadow-card);
+}
+
+.container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+  transition: background 200ms ease-in-out;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin: 0 0 8px 0;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.headerAction {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all 200ms ease-in-out;
+  font-size: 20px;
+}
+
+.headerAction:hover {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+/* Customer Info */
+.customerInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.customerField {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customerLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.customerInput {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none;
+  transition: all 200ms ease-in-out;
+}
+
+.customerInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.customerInput::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Search Section */
+.searchSection {
+  width: 100%;
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+
+.searchInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  font-size: 18px;
+  color: var(--text-secondary);
+  z-index: 1;
+  pointer-events: none;
+  transition: color 200ms ease-in-out;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none;
+  transition: all 200ms ease-in-out;
+  direction: rtl;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Products List */
+.productsList {
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--background);
+  transition: all 200ms ease-in-out;
+}
+
+.productCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.productCard:hover {
+  background-color: var(--background);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.productInfo {
+  flex: 1;
+}
+
+.productName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.productCode {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 4px 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.productPrice {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.addBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  font-size: 18px;
+}
+
+.addBtn:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+/* Order Items Section */
+.orderItemsSection {
+
+}
+
+.orderItemsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.orderItemsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.resetOrderBtn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 200ms ease-in-out;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.resetOrderBtn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.emptyCart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+  gap: 12px;
+  transition: color 200ms ease-in-out;
+}
+
+.emptyCartIcon {
+  font-size: 48px;
+  opacity: 0.4;
+  color: var(--border);
+  transition: color 200ms ease-in-out;
+}
+
+.orderItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.orderItemsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.orderItemsList::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 4px;
+}
+
+.orderItemsList::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  transition: background 200ms ease-in-out;
+}
+
+.orderItemsList::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--background);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  transition: all 200ms ease-in-out;
+}
+
+.orderItem:hover {
+  background-color: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.productThumbnail {
+  width: 48px;
+  height: 48px;
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: all 200ms ease-in-out;
+}
+
+.orderItemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.orderItemName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.orderItemPrice {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  transition: all 200ms ease-in-out;
+}
+
+.quantityBtn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 200ms ease-in-out;
+  font-size: 16px;
+}
+
+.quantityBtn:hover:not(:disabled) {
+  background-color: var(--background);
+}
+
+.quantityBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantityValue {
+  min-width: 32px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.removeBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  font-size: 18px;
+}
+
+.removeBtn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Payment Details Section */
+.paymentDetailsSection {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 8px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  transition: border-color 200ms ease-in-out;
+}
+
+.paymentDetailsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.paymentMethodField {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paymentMethodLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.paymentMethodValue {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  padding: 8px 0;
+  transition: color 200ms ease-in-out;
+}
+
+.paymentOptions {
+  display: flex;
+  gap: 16px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.radioInput {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.walletInput {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none;
+  transition: all 200ms ease-in-out;
+  margin-top: 8px;
+}
+
+.walletInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.paymentSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  padding: 4px 0;
+  transition: color 200ms ease-in-out;
+}
+
+.summaryLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  transition: border-color 200ms ease-in-out;
+}
+
+.totalLabel {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.totalValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+.confirmPaymentBtn {
+  width: 100%;
+  height: 52px;
+  padding: 0;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.confirmPaymentBtn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.confirmPaymentBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.confirmPaymentBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.discountBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--surface);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.discountBtn:hover:not(:disabled) {
+  background-color: var(--primary);
+  color: white;
+}
+
+.discountBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Discount Modal */
+.discountModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 24px;
+}
+
+.discountModalContent {
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: background-color 200ms ease-in-out;
+}
+
+.discountModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 200ms ease-in-out;
+}
+
+.discountModalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountModalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all 200ms ease-in-out;
+}
+
+.discountModalCloseBtn:hover {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.discountModalBody {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.emptyDiscountState {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountItemRow {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--background);
+  transition: all 200ms ease-in-out;
+}
+
+.discountItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discountItemName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountItemPrices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discountPriceLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountInputSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discountInputLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountInput {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none;
+  transition: all 200ms ease-in-out;
+  direction: ltr;
+  text-align: center;
+}
+
+.discountInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.discountWarning {
+  padding: 8px 12px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 12px;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.discountFinalPrice {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.discountModalActions {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  transition: border-color 200ms ease-in-out;
+}
+
+.discountCancelBtn {
+  padding: 12px 24px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.discountCancelBtn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  max-height: 90vh;
+  overflow-y: auto;
+  transition: background-color 200ms ease-in-out, border-color 200ms ease-in-out;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 24px 0;
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.formInput {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'Tajawal', sans-serif;
+  outline: none;
+  transition: all 200ms ease-in-out;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modalSummary {
+  padding: 16px;
+  background-color: var(--background);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background-color 200ms ease-in-out;
+}
+
+.modalSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+.modalTotal {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+}
+
+.modalCancelBtn,
+.modalSaveBtn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.modalCancelBtn {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  transition: all 200ms ease-in-out;
+}
+
+.modalCancelBtn:hover:not(:disabled) {
+  background-color: var(--background);
+}
+
+.modalSaveBtn {
+  background-color: var(--primary);
+  color: white;
+  transition: all 200ms ease-in-out;
+}
+
+.modalSaveBtn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.modalCancelBtn:disabled,
+.modalSaveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 3000;
+  cursor: pointer;
+  animation: slideUp 300ms ease-in-out;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.notification.success {
+  background-color: #22c55e;
+  color: white;
+}
+
+.notification.error {
+  background-color: #ef4444;
+  color: white;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  transition: color 200ms ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .customerInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .orderItem {
+    flex-wrap: wrap;
+  }
+
+  .modalContent {
+    padding: 24px;
+  }
+}

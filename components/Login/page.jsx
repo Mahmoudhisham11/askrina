@@ -5,8 +5,8 @@ import logo from "../../public/images/logo.png"
 import { useState } from "react";
 import { db } from "@/app/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { CiLock } from "react-icons/ci";
-import { MdDriveFileRenameOutline } from "react-icons/md";
+import { HiOutlineLockClosed } from "react-icons/hi2";
+import { HiOutlineEnvelope } from "react-icons/hi2";
 import { IoStorefrontOutline } from "react-icons/io5";
 
 function Login() {
@@ -69,7 +69,7 @@ function Login() {
                     if (typeof window !== 'undefined') {
                         localStorage.setItem('userName', userData.userName)
                         localStorage.setItem('shop', userData.shop)
-                        window.location.reload()
+                        window.location.href = '/'
                     }
                 }
             }
@@ -78,52 +78,100 @@ function Login() {
 
     return (
         <div className={styles.loginContainer}>
-            <div className={styles.logoContainer}>
-                <h2>اسكرينا</h2>
-                <div className={styles.imageContaienr}>
-                    <Image src={logo} fill style={{ objectFit: 'cover' }} className={styles.logoImage} alt="logoImage" />
+            <div className={styles.backgroundPattern}></div>
+            
+            <div className={styles.loginCard}>
+                <div className={styles.logoContainer}>
+                    <div className={styles.logoWrapper}>
+                        <div className={styles.logoCircle}></div>
+                        <div className={styles.imageContaienr}>
+                            <Image src={logo} fill style={{ objectFit: 'cover' }} className={styles.logoImage} alt="logoImage" />
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {/* تسجيل الدخول */}
-            <div className={styles.loginContent} style={{ display: creat ? 'none' : 'flex' }}>
-                <div className={styles.title}>
-                    <h3>مرحبا بك برجاء تسجيل الدخول</h3>
-                </div>
-                <div className={styles.inputs}>
-                    <div className="inputContainer">
-                        <label><MdDriveFileRenameOutline /></label>
-                        <input type="text" value={userName} placeholder="اسم المستخدم" onChange={(e) => setUserName(e.target.value)} />
-                    </div>
-                    <div className="inputContainer">
-                        <label><CiLock /></label>
-                        <input type="password" placeholder="كلمة المرور" onChange={(e) => setPassword(e.target.value)} />
-                    </div>
-                    <button className={styles.loginBtn} onClick={handleLogin}>تسجيل الدخول</button>
-                    <button className={styles.creatBtn} onClick={() => setCreat(true)}>ليس لديك حساب؟ <span>انشاء حساب جديد</span></button>
-                </div>
-            </div>
+                {/* تسجيل الدخول */}
+                <div className={styles.loginContent} style={{ display: creat ? 'none' : 'flex' }}>
+                    <h1 className={styles.welcomeTitle}>مرحبا بعودتك</h1>
+                    <p className={styles.switchText}>
+                        ليس لديك حساب بعد؟{' '}
+                        <button className={styles.switchLink} onClick={() => setCreat(true)}>
+                            إنشاء حساب جديد
+                        </button>
+                    </p>
 
-            {/* إنشاء حساب */}
-            <div className={styles.loginContent} style={{ display: creat ? 'flex' : 'none' }}>
-                <div className={styles.title}>
-                    <h3>مرحبا بك برجاء انشاء حساب جديد</h3>
+                    <div className={styles.inputs}>
+                        <div className={styles.inputWrapper}>
+                            <HiOutlineEnvelope className={styles.inputIcon} />
+                            <input 
+                                type="text" 
+                                value={userName} 
+                                placeholder="اسم المستخدم" 
+                                onChange={(e) => setUserName(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.inputWrapper}>
+                            <HiOutlineLockClosed className={styles.inputIcon} />
+                            <input 
+                                type="password" 
+                                value={password}
+                                placeholder="كلمة المرور" 
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                        <button className={styles.loginBtn} onClick={handleLogin}>
+                            تسجيل الدخول
+                        </button>
+                    </div>
                 </div>
-                <div className={styles.inputs}>
-                    <div className="inputContainer">
-                        <label><MdDriveFileRenameOutline /></label>
-                        <input type="text" value={userName} placeholder="اسم المستخدم" onChange={(e) => setUserName(e.target.value)} />
+
+                {/* إنشاء حساب */}
+                <div className={styles.loginContent} style={{ display: creat ? 'flex' : 'none' }}>
+                    <h1 className={styles.welcomeTitle}>إنشاء حساب جديد</h1>
+                    <p className={styles.switchText}>
+                        لديك حساب بالفعل؟{' '}
+                        <button className={styles.switchLink} onClick={() => setCreat(false)}>
+                            تسجيل الدخول
+                        </button>
+                    </p>
+
+                    <div className={styles.inputs}>
+                        <div className={styles.inputWrapper}>
+                            <HiOutlineEnvelope className={styles.inputIcon} />
+                            <input 
+                                type="text" 
+                                value={userName} 
+                                placeholder="اسم المستخدم" 
+                                onChange={(e) => setUserName(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.inputWrapper}>
+                            <HiOutlineLockClosed className={styles.inputIcon} />
+                            <input 
+                                type="password" 
+                                value={password} 
+                                placeholder="كلمة المرور" 
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.inputWrapper}>
+                            <IoStorefrontOutline className={styles.inputIcon} />
+                            <input 
+                                type="text" 
+                                value={shop} 
+                                placeholder="اسم الفرع" 
+                                onChange={(e) => setShop(e.target.value)}
+                                className={styles.input}
+                            />
+                        </div>
+                        <button className={styles.loginBtn} onClick={handleCreatAcc}>
+                            إنشاء حساب جديد
+                        </button>
                     </div>
-                    <div className="inputContainer">
-                        <label><CiLock /></label>
-                        <input type="password" value={password} placeholder="كلمة المرور" onChange={(e) => setPassword(e.target.value)} />
-                    </div>
-                    <div className="inputContainer">
-                        <label><IoStorefrontOutline /></label>
-                        <input type="text" value={shop} placeholder="اسم الفرع" onChange={(e) => setShop(e.target.value)} />
-                    </div>
-                    <button className={styles.loginBtn} onClick={handleCreatAcc}>انشاء حساب جديد</button>
-                    <button className={styles.creatBtn} onClick={() => setCreat(false)}>لديك حساب بالفعل؟ <span>تسجيل الدخول</span></button>
                 </div>
             </div>
         </div>

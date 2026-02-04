@@ -1,25 +1,23 @@
 'use client';
+import { useEffect, useState } from 'react';
+import Dashboard from "@/components/Dashboard/Dashboard";
 import Login from "@/components/Login/page";
-import Main from "@/components/Main/page";
-import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [login, setlogin] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if(typeof window !== "undefined") {
-      const storageUserName = localStorage.getItem("userName")
-      if(storageUserName) {
-        setlogin(true)
-      }else {
-        setlogin(false)
-      }
+    if (typeof window !== 'undefined') {
+      const userName = localStorage.getItem('userName');
+      setIsLoggedIn(!!userName);
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
-  return (
-    <div className="main">
-      {login ? <Main/> : <Login/>}
-    </div>
-  );
+  if (isLoading) {
+    return null; // أو يمكنك إضافة loading spinner
+  }
+
+  return isLoggedIn ? <Dashboard /> : <Login />;
 }
