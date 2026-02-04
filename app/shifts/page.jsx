@@ -308,6 +308,7 @@ export default function Shifts() {
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // جلب بيانات الوردية عند تغيير التاريخ
@@ -316,6 +317,7 @@ export default function Shifts() {
       fetchShiftData(selectedDate);
       setPaymentFilter('all'); // إعادة تعيين الفلترة عند تغيير التاريخ
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   // فلترة المبيعات حسب طريقة الدفع

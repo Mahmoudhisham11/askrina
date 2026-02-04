@@ -72,6 +72,7 @@ export default function Invoices() {
     if (shop) {
       fetchInvoices();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // إعادة جلب الفواتير كل 3 ثوانٍ للتحديث التلقائي
@@ -83,6 +84,7 @@ export default function Invoices() {
     }, 3000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // البحث برقم الفاتورة

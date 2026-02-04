@@ -397,6 +397,7 @@ export default function Reports() {
       fetchReports();
       fetchTreasuryTransactions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop, fromDate, toDate]);
 
   // معالجة تغيير التواريخ

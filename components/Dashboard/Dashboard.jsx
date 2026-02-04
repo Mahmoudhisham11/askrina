@@ -121,6 +121,7 @@ export default function Dashboard() {
 
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // دالة لتحديث الإحصائيات بعد حفظ فاتورة جديدة

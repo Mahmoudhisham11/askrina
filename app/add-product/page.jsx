@@ -113,6 +113,7 @@ export default function AddProduct() {
     if (shop) {
       fetchProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // إخفاء الإشعار تلقائياً بعد 1.5 ثانية
@@ -679,7 +680,7 @@ export default function AddProduct() {
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>تأكيد الحذف</h3>
             <p className={styles.modalMessage}>
-              هل أنت متأكد من حذف المنتج "{deleteConfirm.name}" (كود: {deleteConfirm.code})؟
+              هل أنت متأكد من حذف المنتج &quot;{deleteConfirm.name}&quot; (كود: {deleteConfirm.code})؟
             </p>
             <div className={styles.modalActions}>
               <button

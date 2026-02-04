@@ -51,6 +51,7 @@ export default function Cart({ onInvoiceSaved }) {
     if (shop) {
       fetchProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // البحث في المنتجات وإضافة المنتج تلقائياً عند المطابقة التامة

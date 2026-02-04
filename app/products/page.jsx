@@ -54,6 +54,7 @@ export default function Products() {
     if (shop) {
       fetchProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // تصفية المنتجات حسب النوع والبحث

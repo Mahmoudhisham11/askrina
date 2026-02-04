@@ -66,6 +66,7 @@ export default function Returns() {
     if (shop) {
       fetchInvoices();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // البحث برقم الفاتورة

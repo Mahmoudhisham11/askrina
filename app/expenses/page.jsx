@@ -35,6 +35,7 @@ export default function Expenses() {
       const day = today.getDate().toString().padStart(2, '0');
       setExpenseDate(`${year}-${month}-${day}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // جلب المصاريف من Firebase
@@ -73,6 +74,7 @@ export default function Expenses() {
     if (shop) {
       fetchExpenses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
   // البحث في المصاريف
