@@ -116,22 +116,8 @@
 }
 
 @media print {
-    @page {
-      size: 80mm auto;
-      margin: 0;
+    .btn, .btnBack {
+        display: none !important;
     }
-  
-    body {
-      margin: 0;
-      padding: 0;
-      width: 80mm;
-      background: white;
-    }
-  
-    table,
-    th,
-    td {
-      padding: 2px;
-    }
-  }
+}
   
