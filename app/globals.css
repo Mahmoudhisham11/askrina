@@ -152,7 +152,7 @@ tfoot {
 }
 @media print {
   @page {
-    size: 80mm auto;
+    size: auto;
     margin: 0;
   }
  
@@ -160,28 +160,5 @@ tfoot {
     margin: 0;
     padding: 0;
     width: 80mm;
-    background: white;
-  }
- 
-  /* ❌ امنع sticky في الطباعة */
-  thead th {
-    position: static !important;
-    background: none;
-    color: black;
-  }
- 
-  /* ✂️ تصغير padding للطباعة */
-  table,
-  th,
-  td {
-    padding: 2px !important;
-    font-size: 10px;
-  }
- 
-  /* ✂️ تصغير الفوتر */
-  tfoot {
-    font-size: 11px;
-    background: none;
-    color: black;
   }
 }
