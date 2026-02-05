@@ -252,21 +252,6 @@
 
 /* Print styles */
 @media print {
-    @page {
-        size: A4;
-        margin: 0;
-    }
-
-    * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-        background: white;
-    }
 
     .resete {
         background: white !important;
