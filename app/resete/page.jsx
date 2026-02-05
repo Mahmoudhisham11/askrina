@@ -39,7 +39,7 @@ function Resete() {
   if (!invoice) return <div className={styles.resete}><p>لا توجد فاتورة لعرضها.</p></div>;
 
   return (
-    <div className={styles.resete}>
+    <div className={`${styles.resete} invoice-print-root`}>
       <div className={styles.title}>
         <button onClick={() => router.push('/')} className={styles.btnBack}>رجوع</button>
         <h2>اسكرينا</h2>
@@ -51,10 +51,11 @@ function Resete() {
       {/* عرض الفاتورة على الشاشة */}
       <div className={styles.invoice}>
         <h3 style={{ textAlign: 'center' }}>فاتورة مبيعات</h3>
+        <p><strong>رقم الفاتورة:</strong> {invoice.invoiceNumber}</p>
         {/* ✅ التاريخ */}
         <p><strong>التاريخ:</strong> {currentDate}</p>
-        <p><strong>العميل:</strong> {invoice.clientName}</p>
-        <p><strong>الهاتف:</strong> {invoice.phone}</p>
+        <p><strong>العميل:</strong> {invoice.customerName}</p>
+        <p><strong>الهاتف:</strong> {invoice.customerPhone}</p>
 
         <table>
           <thead>
@@ -66,27 +67,27 @@ function Resete() {
             </tr>
           </thead>
           <tbody>
-            {invoice.cart.map(item => (
-              <tr key={item.id}>
-                <td>{item.code}</td>
-                <td>{item.name}</td>
+            {invoice.items?.map((item, index) => (
+              <tr key={item.productId || item.productCode || index}>
+                <td>{item.productCode}</td>
+                <td>{item.productName}</td>
                 <td>{item.quantity}</td>
-                <td>{item.total} $</td>
+                <td>{item.totalPrice} ج.م</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={4}>الإجمالي: {invoice.total} $</td>
+              <td colSpan={4}>الإجمالي: {invoice.total} ج.م</td>
             </tr>
           </tfoot>
         </table>
       </div>
 
       <div className={styles.text}>
-        <p>المدفوع: {invoice.total}$</p>
+        <p>المدفوع: {invoice.total} ج.م</p>
         <p>المتبقي: 0.0</p>
-        <p>عدد الاصناف:<span style={{border: '2px solid black', padding: "5px"}}>{invoice.lenth}</span></p>
+        <p>عدد الاصناف:<span style={{border: '2px solid black', padding: "5px"}}>{invoice.items?.length || 0}</span></p>
         <p>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>رقم الهاتف: 01113865582</p>
         <p style={{ textAlign: 'center', marginTop: '5px'}}>شكراً لتعاملكم معنا!</p>

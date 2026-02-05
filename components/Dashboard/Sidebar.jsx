@@ -11,6 +11,7 @@ import { HiOutlinePlus } from 'react-icons/hi2';
 import { HiOutlineListBullet } from 'react-icons/hi2';
 import { HiOutlineArrowUturnLeft } from 'react-icons/hi2';
 import { HiOutlineChartBar } from 'react-icons/hi2';
+import { HiOutlineDocumentText } from 'react-icons/hi2';
 
 export default function Sidebar({ activeNav = 'لوحة التحكم' }) {
   const router = useRouter();
@@ -76,6 +77,11 @@ export default function Sidebar({ activeNav = 'لوحة التحكم' }) {
 
   const handleReportsClick = () => {
     router.push('/reports');
+    closeSidebar();
+  };
+
+  const handleInvoicesClick = () => {
+    router.push('/invoices');
     closeSidebar();
   };
 
@@ -162,6 +168,15 @@ export default function Sidebar({ activeNav = 'لوحة التحكم' }) {
       >
         <HiOutlineArrowUturnLeft className={styles.navIcon} />
         <span>المرتجعات</span>
+      </button>
+
+      {/* الفواتير */}
+      <button
+        className={`${styles.navItem} ${pathname === '/invoices' ? styles.active : ''}`}
+        onClick={handleInvoicesClick}
+      >
+        <HiOutlineDocumentText className={styles.navIcon} />
+        <span>الفواتير</span>
       </button>
 
       {/* التقارير */}

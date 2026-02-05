@@ -12,7 +12,7 @@ export default function Reports() {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [treasury, setTreasury] = useState(0); // الخزنة
+  const [treasury, setTreasury] = useState(0); // الخزنة (صافي المبيع بعد المصاريف ومعاملات الخزنة)
   const [expenses, setExpenses] = useState(0); // المصاريف
   const [netProfit, setNetProfit] = useState(0); // صافي الربح
   const [profitStatus, setProfitStatus] = useState('profit'); // 'profit' or 'loss'
@@ -160,8 +160,8 @@ export default function Reports() {
         totalExpenses += data.amount || 0;
       });
 
-      // حساب صافي الربح
-      const calculatedNetProfit = totalProfit - totalExpenses;
+      // سنستخدم totalTreasury (إجمالي المبيعات) و totalExpenses (إجمالي المصاريف)
+      // لحساب صافي المبيع والخزنة وصافي الربح بعد إدخال معاملات الخزنة
 
       // جلب معاملات الخزنة لتحديث الخزنة
       let treasuryDeposits = 0;
@@ -212,8 +212,14 @@ export default function Reports() {
         treasurySnapshot = { docs: [] };
       }
 
-      // تحديث الخزنة ليشمل المعاملات
-      const updatedTreasury = totalTreasury + treasuryDeposits - treasuryWithdrawals;
+      // حساب صافي المبيع (إجمالي المبيعات - المصاريف)
+      const netSales = totalTreasury - totalExpenses;
+
+      // تحديث الخزنة: صافي المبيع + الإيداعات - السحوبات
+      const updatedTreasury = netSales + treasuryDeposits - treasuryWithdrawals;
+
+      // حساب صافي الربح بعد خصم المصاريف وسحوبات الخزنة
+      const calculatedNetProfit = totalProfit - totalExpenses - treasuryWithdrawals;
 
       // حساب إجمالي مصاريف الخزنة (الصرف فقط) - نستخدم treasuryWithdrawals المحسوب بالفعل
       const totalTreasuryExpenses = treasuryWithdrawals;
@@ -483,8 +489,14 @@ export default function Reports() {
     }
 
     const amount = parseFloat(treasuryAmount);
-    
-    // التحقق من التحذير
+
+    // منع صرف مبلغ أكبر من الخزنة
+    if (amount > treasury) {
+      showNotification('❌ لا يمكن صرف مبلغ أكبر من الموجود في الخزنة', 'error');
+      return;
+    }
+
+    // التحقق من التحذير بالنسبة لصافي الربح
     if (amount > netProfit && !showWarning) {
       setShowWarning(true);
       return;
@@ -648,9 +660,9 @@ export default function Reports() {
                   <p className={styles.cardValue}>{formatNumber(expenses)} ج.م</p>
                   <div className={styles.cardTrend}>
                     <span className={styles.trendLabel}>إجمالي</span>
-                        </div>
-                        </div>
-                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* صافي الربح */}
               <div className={styles.statCard}>
@@ -833,12 +845,8 @@ export default function Reports() {
                       onChange={(e) => {
                         setTreasuryAmount(e.target.value);
                         if (treasuryModalType === 'withdrawal') {
-                          const amount = parseFloat(e.target.value) || 0;
-                          if (amount > netProfit) {
-                            setShowWarning(true);
-                          } else {
-                            setShowWarning(false);
-                          }
+                          const value = parseFloat(e.target.value) || 0;
+                          setShowWarning(value > netProfit);
                         }
                       }}
                       required

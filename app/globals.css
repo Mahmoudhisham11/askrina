@@ -161,8 +161,8 @@ tfoot {
     margin: 0;
   }
   
-  /* إخفاء جميع العناصر عند الطباعة ما عدا عنصر الطباعة المنفصل */
-  body > *:not(.barcode-print-root) {
+  /* إخفاء جميع العناصر عند الطباعة ما عدا عنصر الطباعة المنفصل وصفحة الفاتورة */
+  body > *:not(.barcode-print-root):not(.invoice-print-root) {
     display: none !important;
     visibility: hidden !important;
   }
@@ -177,6 +177,16 @@ tfoot {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+  }
+
+  /* عرض صفحة الفاتورة عند الطباعة */
+  .invoice-print-root {
+    display: flex !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
   }
   
   /* أنماط محتوى الباركود */

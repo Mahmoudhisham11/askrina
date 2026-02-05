@@ -650,3 +650,92 @@
   }
 }
 
+/* جدول الفواتير */
+.tableContainer {
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.productsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Tajawal', sans-serif;
+  min-width: 800px;
+}
+
+.productsTable thead {
+  background-color: var(--background);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.productsTable th {
+  padding: 16px 20px;
+  text-align: right;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  background-color: var(--background);
+}
+
+.productsTable th:first-child {
+  border-top-right-radius: var(--radius-md);
+}
+
+.productsTable th:last-child {
+  border-top-left-radius: var(--radius-md);
+}
+
+.productsTable td {
+  padding: 16px 20px;
+  text-align: right;
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.productsTable tbody tr {
+  transition: all 200ms ease-in-out;
+  background-color: var(--card);
+}
+
+.productsTable tbody tr:hover {
+  background-color: var(--background);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.productsTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.productsTable tbody tr:last-child td:first-child {
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.productsTable tbody tr:last-child td:last-child {
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.productNameCell {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.priceCell {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  direction: ltr;
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+}
+

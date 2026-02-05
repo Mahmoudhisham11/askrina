@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { db } from '@/app/firebase';
 import { collection, getDocs, query, where, addDoc, updateDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlineMinus, HiOutlineTrash, HiDotsVertical } from 'react-icons/hi';
@@ -8,6 +9,7 @@ import { HiOutlineCube } from 'react-icons/hi';
 import styles from './Cart.module.css';
 
 export default function Cart({ onInvoiceSaved }) {
+  const router = useRouter();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -331,6 +333,26 @@ export default function Cart({ onInvoiceSaved }) {
           }
         }
       }
+
+      // حفظ نسخة مبسطة من بيانات الفاتورة في localStorage لاستخدامها في صفحة الطباعة
+      if (typeof window !== 'undefined') {
+        const printableInvoice = {
+          invoiceNumber,
+          customerName: invoiceData.customerName,
+          customerPhone: invoiceData.customerPhone,
+          paymentMethod: invoiceData.paymentMethod,
+          walletNumber: invoiceData.walletNumber,
+          items: invoiceItems,
+          subtotal,
+          total,
+          totalProfit
+        };
+
+        localStorage.setItem('lastInvoice', JSON.stringify(printableInvoice));
+      }
+
+      // الانتقال إلى صفحة طباعة الفاتورة
+      router.push('/resete');
 
       // إفراغ الـ cart وإعادة تعيين الحقول
       setCartItems([]);
