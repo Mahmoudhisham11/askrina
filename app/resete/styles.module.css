@@ -85,6 +85,7 @@
   margin-bottom: 15px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 .detailRow {
@@ -114,6 +115,7 @@
   background-color: #f9fafb;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 .sectionTitle {
@@ -197,6 +199,7 @@
   background-color: #f9fafb;
   border-radius: 8px;
   border: 2px solid #e5e7eb;
+  width: 100%;
 }
 
 .totalRow {
@@ -238,6 +241,7 @@
   padding: 10px;
   background-color: #f9fafb;
   border-radius: 6px;
+  width: 100%;
 }
 
 .contactText {
@@ -257,6 +261,7 @@
   background-color: #ffffff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 /* Footer */
@@ -265,6 +270,7 @@
   margin-top: 20px;
   padding-top: 15px;
   border-top: 2px solid #e5e7eb;
+  width: 100%;
 }
 
 .footerText {
@@ -323,10 +329,15 @@
   .resete {
     background: #ffffff;
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
     width: 80mm;
     max-width: 80mm;
+    height: auto;
     min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .btnBack,
@@ -338,50 +349,57 @@
   .invoice {
     max-width: 80mm;
     width: 100%;
-    margin: 0;
-    padding: 10px 8px;
+    margin: 0 auto;
+    padding: 8px 6px;
     box-shadow: none;
     border-radius: 0;
     border: none;
     page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .header {
-    margin-bottom: 12px;
-    padding-bottom: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    width: 100%;
+    text-align: center;
   }
 
   .logoPlaceholder {
-    width: 60px;
-    height: 60px;
-    font-size: 16px;
-    margin-bottom: 8px;
+    width: 50px;
+    height: 50px;
+    font-size: 14px;
+    margin-bottom: 5px;
   }
 
   .invoiceTitle {
-    font-size: 18px;
+    font-size: 16px;
+    margin: 0;
   }
 
   .invoiceDetails,
   .customerDetails {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    width: 100%;
   }
 
   .customerDetails {
-    padding: 8px;
+    padding: 6px;
     background-color: #ffffff;
     border: 1px solid #e5e7eb;
   }
 
   .sectionTitle {
-    font-size: 13px;
-    margin-bottom: 8px;
+    font-size: 12px;
+    margin-bottom: 5px;
   }
 
   .detailRow {
-    margin-bottom: 5px;
-    padding: 4px 0;
+    margin-bottom: 3px;
+    padding: 2px 0;
   }
 
   .detailLabel,
@@ -390,11 +408,14 @@
   }
 
   .tableContainer {
-    margin: 10px 0;
+    margin: 6px 0;
+    width: 100%;
   }
 
   .itemsTable {
-    font-size: 10px;
+    font-size: 9px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .itemsTable thead {
@@ -404,14 +425,14 @@
   }
 
   .itemsTable th {
-    padding: 6px 4px;
-    font-size: 10px;
+    padding: 4px 3px;
+    font-size: 9px;
     border: 1px solid #374151;
   }
 
   .itemsTable td {
-    padding: 6px 4px;
-    font-size: 10px;
+    padding: 4px 3px;
+    font-size: 9px;
   }
 
   .itemsTable tbody tr:nth-child(even) {
@@ -430,51 +451,61 @@
   }
 
   .totalSection {
-    margin: 12px 0;
-    padding: 10px;
+    margin: 6px 0;
+    padding: 6px;
     background-color: #f9fafb !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     border: 1px solid #d1d5db;
+    width: 100%;
   }
 
   .totalRow {
-    margin-bottom: 6px;
-    padding: 5px 0;
+    margin-bottom: 4px;
+    padding: 3px 0;
   }
 
   .totalLabel,
   .totalValue {
-    font-size: 12px;
-  }
-
-  .totalAmount {
-    font-size: 16px;
-  }
-
-  .contactInfo {
-    margin: 10px 0;
-    padding: 8px;
-    background-color: #ffffff;
-  }
-
-  .contactText {
     font-size: 11px;
   }
 
+  .totalAmount {
+    font-size: 14px;
+  }
+
+  .contactInfo {
+    margin: 6px 0;
+    padding: 4px;
+    background-color: #ffffff;
+    width: 100%;
+    text-align: center;
+  }
+
+  .contactText {
+    font-size: 10px;
+    margin: 0;
+  }
+
   .qrContainer {
-    margin: 15px 0;
-    padding: 10px;
+    margin: 8px 0;
+    padding: 5px;
     background-color: #ffffff;
     border: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .footer {
-    margin-top: 15px;
-    padding-top: 10px;
+    margin-top: 8px;
+    padding-top: 6px;
+    width: 100%;
+    text-align: center;
   }
 
   .footerText {
-    font-size: 12px;
+    font-size: 11px;
+    margin: 0;
   }
 }
