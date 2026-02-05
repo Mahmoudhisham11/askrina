@@ -2,28 +2,23 @@
     width: 100%;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
     background-color: #f5f5f5;
-    font-family: 'Tajawal', Arial, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .title {
     position: relative;
     width: 100%;
-    max-width: 384px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .btnBack {
@@ -36,491 +31,139 @@
 }
 
 .title h2 {
-    font-size: 32px;
-    font-weight: bold;
-    color: #1a1a1a;
-    margin: 0;
+    font-size: 28px;
 }
 
 .imageContainer {
     position: relative;
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
 }
 
 .invoice {
     width: 100%;
     max-width: 384px; /* مناسب للطابعة الحرارية */
     background-color: white;
-    padding: 20px;
+    padding: 5px;
     box-sizing: border-box;
     direction: rtl;
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 20px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    border: 1px solid #000;
 }
 
 .invoice h3 {
     text-align: center;
-    margin: 0 0 16px 0;
-    font-size: 20px;
-    font-weight: bold;
-    color: #1a1a1a;
-    border-bottom: 2px solid #1a1a1a;
-    padding-bottom: 12px;
+    margin: 2px 0;
 }
 
 .invoice p {
-    margin: 8px 0;
-    line-height: 1.6;
-    font-size: 13px;
-    color: #333;
+    margin: 2px 0;
+    line-height: 1.2;
 }
 
 .invoice table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
-    margin: 16px 0;
+    font-size: 12px;
+    margin: 2px 0;
 }
 
-.invoice th {
-    background-color: #1a1a1a;
-    color: white;
-    padding: 10px 8px;
+.invoice th, .invoice td {
+    border: 1px solid black;
+    padding: 2px 4px;
     text-align: right;
-    font-weight: bold;
-    font-size: 13px;
-    border: 1px solid #1a1a1a;
-}
-
-.invoice td {
-    border: 1px solid #ddd;
-    padding: 10px 8px;
-    text-align: right;
-    font-size: 13px;
-}
-
-.invoice tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.invoice tbody tr:hover {
-    background-color: #f5f5f5;
 }
 
 .invoice tfoot td {
-    border-top: 2px solid #1a1a1a;
+    border-top: 2px solid black;
     font-weight: bold;
-    background-color: #f9f9f9;
-    padding: 12px 8px;
-    font-size: 14px;
-}
-
-.text {
-    width: 100%;
-    max-width: 384px;
-    background-color: white;
-    padding: 20px;
-    box-sizing: border-box;
-    direction: rtl;
-    font-size: 13px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.text p {
-    margin: 10px 0;
-    line-height: 1.6;
-    color: #333;
-    font-size: 13px;
-}
-
-.text p:last-of-type {
-    margin-top: 16px;
-    font-weight: bold;
-    color: #1a1a1a;
-}
-
-.summarySection {
-    margin-bottom: 16px;
-}
-
-.summaryRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.summaryRow:last-child {
-    border-bottom: none;
-}
-
-.summaryLabel {
-    font-weight: 500;
-    color: #666;
-    font-size: 13px;
-}
-
-.summaryValue {
-    font-weight: bold;
-    color: #1a1a1a;
-    font-size: 14px;
-}
-
-.divider {
-    height: 1px;
-    background-color: #ddd;
-    margin: 16px 0;
-}
-
-.contactSection {
-    margin: 16px 0;
-}
-
-.contactInfo {
-    margin: 6px 0 !important;
-    text-align: center !important;
-    color: #666 !important;
-    font-size: 12px !important;
-}
-
-.thankYou {
-    text-align: center !important;
-    margin-top: 20px !important;
-    font-weight: bold !important;
-    font-size: 16px !important;
-    color: #1a1a1a !important;
-    padding-top: 16px !important;
-    border-top: 2px solid #1a1a1a !important;
 }
 
 .btn {
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .btn button {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 6px 12px;
+    font-size: 14px;
     cursor: pointer;
-    background-color: #1a1a1a;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.btn button:hover {
-    background-color: #333;
 }
 
 .footer {
     width: 100%;
-    max-width: 384px;
     text-align: center;
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #f9f9f9;
-    border-radius: 6px;
+    margin-top: 5px;
 }
 
 .footer strong {
-    font-size: 12px;
-    color: #666;
-    font-weight: normal;
-}
-
-.qrContainer {
-    width: 100%;
-    max-width: 384px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-bottom: 20px;
+    font-size: 16px;
 }
 
 /* Print styles */
 @media print {
 
     .resete {
-        background: white !important;
-        width: 80mm !important;
-        max-width: 80mm !important;
-        height: auto !important;
-        margin: 0 auto !important;
-        padding: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important;
-        align-items: center !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        page-break-inside: avoid;
-    }
-    
-    .resete > * {
-        visibility: visible !important;
-        display: block !important;
+        background: none;
+        width: 100%;
+        height: 100vh; /* طول الصفحة بالكامل */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* يبدأ من الأعلى */
+        align-items: center;
     }
 
     .btn, .btnBack {
-        display: none !important;
-    }
-
-    .title {
-        width: 100% !important;
-        max-width: 80mm !important;
-        margin: 0 auto 2mm auto !important;
-        padding: 5mm 3mm 3mm 3mm !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 4px !important;
-        background: white !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        page-break-inside: avoid;
-    }
-
-    .title h2 {
-        font-size: 20px !important;
-        margin: 0 !important;
-        font-weight: bold !important;
-        line-height: 1.2 !important;
-    }
-
-    .imageContainer {
-        width: 60px !important;
-        height: 60px !important;
+        display: none; /* إخفاء الأزرار */
     }
 
     .invoice {
-        max-width: 80mm !important;
-        width: 100% !important;
-        margin: 0 auto 3mm auto !important;
-        padding: 5mm 3mm !important;
-        font-size: 12px !important;
-        box-sizing: border-box !important;
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        background: white !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        display: block !important;
-        page-break-inside: avoid;
-    }
-    
-    .invoice * {
-        visibility: visible !important;
-        color: #000 !important;
+        max-width: 384px;
+        width: 100%;
+        padding: 5px;
+        font-size: 12px;
+        box-sizing: border-box;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* العناصر قريبة من بعض */
     }
 
     .invoice h3 {
-        margin: 0 0 6px 0 !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        padding-bottom: 5px !important;
-        border-bottom: 2px solid #1a1a1a !important;
+        margin: 2px 0;
+        font-size: 14px;
     }
 
     .invoice p {
-        margin: 3px 0 !important;
-        font-size: 12px !important;
-        line-height: 1.3 !important;
+        margin: 1px 0; /* مسافات صغيرة بين العناصر */
+        font-size: 12px;
     }
 
     .invoice table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        font-size: 11px !important;
-        margin: 6px 0 !important;
-        visibility: visible !important;
-        display: table !important;
-    }
-    
-    .invoice thead,
-    .invoice tbody,
-    .invoice tfoot {
-        visibility: visible !important;
-        display: table-row-group !important;
-    }
-    
-    .invoice tr {
-        visibility: visible !important;
-        display: table-row !important;
-    }
-    
-    .invoice th,
-    .invoice td {
-        visibility: visible !important;
-        display: table-cell !important;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 2px 0;
     }
 
-    .invoice th {
-        background-color: #1a1a1a !important;
-        color: white !important;
-        padding: 4px 4px !important;
-        font-size: 11px !important;
-        font-weight: bold !important;
-        border: 1px solid #1a1a1a !important;
-    }
-
-    .invoice td {
-        border: 1px solid #ddd !important;
-        padding: 4px 4px !important;
-        font-size: 11px !important;
-    }
-
-    .invoice tbody tr:nth-child(even) {
-        background-color: #f9f9f9 !important;
+    .invoice th, .invoice td {
+        border: 1px solid black;
+        padding: 1px 3px;
+        text-align: right;
+        font-size: 12px;
     }
 
     .invoice tfoot td {
-        border-top: 2px solid #1a1a1a !important;
-        font-weight: bold !important;
-        background-color: #f9f9f9 !important;
-        padding: 5px 4px !important;
-        font-size: 12px !important;
-    }
-
-    .text {
-        max-width: 80mm !important;
-        width: 100% !important;
-        margin: 0 auto 3mm auto !important;
-        padding: 5mm 3mm !important;
-        font-size: 12px !important;
-        box-sizing: border-box !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        background: white !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        display: block !important;
-        page-break-inside: avoid;
-    }
-    
-    .text * {
-        visibility: visible !important;
-        color: #000 !important;
-    }
-
-    .text p {
-        margin: 4px 0 !important;
-        font-size: 12px !important;
-        line-height: 1.3 !important;
-    }
-
-    .summarySection {
-        margin-bottom: 6px !important;
-    }
-
-    .summaryRow {
-        display: flex !important;
-        justify-content: space-between !important;
-        padding: 3px 0 !important;
-        border-bottom: 1px solid #eee !important;
-    }
-
-    .summaryLabel {
-        font-weight: 500 !important;
-        color: #666 !important;
-        font-size: 11px !important;
-    }
-
-    .summaryValue {
-        font-weight: bold !important;
-        color: #1a1a1a !important;
-        font-size: 12px !important;
-    }
-
-    .divider {
-        height: 1px !important;
-        background-color: #ddd !important;
-        margin: 6px 0 !important;
-    }
-
-    .contactSection {
-        margin: 6px 0 !important;
-    }
-
-    .contactInfo {
-        margin: 2px 0 !important;
-        text-align: center !important;
-        color: #666 !important;
-        font-size: 10px !important;
-    }
-
-    .thankYou {
-        text-align: center !important;
-        margin-top: 8px !important;
-        font-weight: bold !important;
-        font-size: 12px !important;
-        color: #1a1a1a !important;
-        padding-top: 6px !important;
-        border-top: 2px solid #1a1a1a !important;
-    }
-
-    /* QR Code container */
-    .qrContainer {
-        max-width: 80mm !important;
-        width: 100% !important;
-        margin: 0 auto 2mm auto !important;
-        padding: 3mm 3mm !important;
-        display: flex !important;
-        justify-content: center !important;
-        background: white !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        page-break-inside: avoid;
-    }
-    
-    .qrContainer canvas {
-        visibility: visible !important;
-        display: block !important;
-        width: 80px !important;
-        height: 80px !important;
+        border-top: 2px solid black;
+        font-weight: bold;
+        font-size: 12px;
     }
 
     .footer {
-        max-width: 80mm !important;
-        width: 100% !important;
-        margin: 0 auto !important;
-        padding: 3mm 3mm !important;
-        text-align: center !important;
-        font-size: 10px !important;
-        background: #f9f9f9 !important;
-        border-radius: 0 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        display: block !important;
-        page-break-inside: avoid;
-    }
-    
-    .footer * {
-        visibility: visible !important;
-        color: #000 !important;
-    }
-
-    .footer strong {
-        font-size: 11px !important;
-        font-weight: normal !important;
-        color: #666 !important;
+        text-align: center;
+        font-size: 12px;
+        margin-top: 2px;
     }
 }

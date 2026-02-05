@@ -36,10 +36,25 @@ function Resete() {
     window.print();
   };
 
-  if (!invoice) return <div className={styles.resete}><p>لا توجد فاتورة لعرضها.</p></div>;
+  if (!invoice) {
+    return (
+      <div className={styles.resete}>
+        <p>لا توجد فاتورة لعرضها.</p>
+      </div>
+    );
+  }
+
+  // التحقق من وجود البيانات الأساسية
+  if (!invoice.items || !Array.isArray(invoice.items)) {
+    return (
+      <div className={styles.resete}>
+        <p>بيانات الفاتورة غير صحيحة.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className={`${styles.resete} invoice-print-root`}>
+    <div className={styles.resete}>
       <div className={styles.title}>
         <button onClick={() => router.push('/')} className={styles.btnBack}>رجوع</button>
         <h2>اسكرينا</h2>
@@ -51,11 +66,11 @@ function Resete() {
       {/* عرض الفاتورة على الشاشة */}
       <div className={styles.invoice}>
         <h3 style={{ textAlign: 'center' }}>فاتورة مبيعات</h3>
-        <p><strong>رقم الفاتورة:</strong> {invoice.invoiceNumber}</p>
+        <p><strong>رقم الفاتورة:</strong> {invoice.invoiceNumber || 'غير متوفر'}</p>
         {/* ✅ التاريخ */}
         <p><strong>التاريخ:</strong> {currentDate}</p>
-        <p><strong>العميل:</strong> {invoice.customerName}</p>
-        <p><strong>الهاتف:</strong> {invoice.customerPhone}</p>
+        <p><strong>العميل:</strong> {invoice.customerName || 'غير معروف'}</p>
+        <p><strong>الهاتف:</strong> {invoice.customerPhone || 'غير متوفر'}</p>
 
         <table>
           <thead>
@@ -67,54 +82,43 @@ function Resete() {
             </tr>
           </thead>
           <tbody>
-            {invoice.items?.map((item, index) => (
-              <tr key={item.productId || item.productCode || index}>
-                <td>{item.productCode}</td>
-                <td>{item.productName}</td>
-                <td>{item.quantity}</td>
-                <td>{item.totalPrice} ج.م</td>
+            {invoice.items && invoice.items.length > 0 ? (
+              invoice.items.map((item, index) => (
+                <tr key={item.productId || item.id || index}>
+                  <td>{item.productCode || item.code || 'غير متوفر'}</td>
+                  <td>{item.productName || item.name || 'غير متوفر'}</td>
+                  <td>{item.quantity || 0}</td>
+                  <td>{item.totalPrice || item.total || 0} ج.م</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center' }}>لا توجد منتجات</td>
               </tr>
-            ))}
+            )}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={4}>الإجمالي: {invoice.total} ج.م</td>
+              <td colSpan={4}>الإجمالي: {invoice.total || 0} ج.م</td>
             </tr>
           </tfoot>
         </table>
       </div>
 
       <div className={styles.text}>
-        <div className={styles.summarySection}>
-          <div className={styles.summaryRow}>
-            <span className={styles.summaryLabel}>المدفوع:</span>
-            <span className={styles.summaryValue}>{invoice.total} ج.م</span>
-          </div>
-          <div className={styles.summaryRow}>
-            <span className={styles.summaryLabel}>المتبقي:</span>
-            <span className={styles.summaryValue}>0.00 ج.م</span>
-          </div>
-          <div className={styles.summaryRow}>
-            <span className={styles.summaryLabel}>عدد الأصناف:</span>
-            <span className={styles.summaryValue}>{invoice.items?.length || 0}</span>
-          </div>
-        </div>
-        
-        <div className={styles.divider}></div>
-        
-        <div className={styles.contactSection}>
-          <p className={styles.contactInfo}>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
-          <p className={styles.contactInfo}>رقم الهاتف: 01113865582</p>
-        </div>
-        
-        <p className={styles.thankYou}>شكراً لتعاملكم معنا!</p>
+        <p>المدفوع: {invoice.total || 0} ج.م</p>
+        <p>المتبقي: 0.00 ج.م</p>
+        <p>عدد الاصناف:<span style={{border: '2px solid black', padding: "5px"}}>{invoice.items?.length || 0}</span></p>
+        <p>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
+        <p style={{ textAlign: 'center', marginTop: '5px'}}>رقم الهاتف: 01113865582</p>
+        <p style={{ textAlign: 'center', marginTop: '5px'}}>شكراً لتعاملكم معنا!</p>
       </div>
 
       {/* ✅ إضافة QR Code */}
-      <div className={styles.qrContainer}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
         <QRCodeCanvas 
           value="https://www.tiktok.com/@s3edahmed1"
-          size={80}
+          size={100}
         />
       </div>
 
