@@ -8,6 +8,9 @@ import styles from './styles.module.css';
 import Topbar from '@/components/Dashboard/Topbar';
 import Sidebar from '@/components/Dashboard/Sidebar';
 
+// Force dynamic rendering - this page uses useSearchParams, localStorage, and Firebase
+export const dynamic = 'force-dynamic';
+
 export default function AddProduct() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,7 +54,15 @@ export default function AddProduct() {
   const [accessoryBuyPrice, setAccessoryBuyPrice] = useState('');
   const [accessorySellPrice, setAccessorySellPrice] = useState('');
 
-  const shop = typeof window !== 'undefined' ? localStorage.getItem('shop') : '';
+  const [shop, setShop] = useState('');
+
+  // Initialize shop from localStorage on client side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shopValue = localStorage.getItem('shop') || '';
+      setShop(shopValue);
+    }
+  }, []);
 
   // حساب الكود التسلسلي
   useEffect(() => {
