@@ -152,7 +152,7 @@ tfoot {
 }
 @media print {
   @page {
-    size: A4;
+    size: auto;
     margin: 0;
   }
   
@@ -165,5 +165,34 @@ tfoot {
     margin: 0;
     padding: 0;
     background: white;
+  }
+  
+  /* إخفاء جميع العناصر عند الطباعة ما عدا عنصر الطباعة المنفصل وصفحة الفاتورة */
+  body > *:not(.barcode-print-root):not(.invoice-print-root) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* عرض عنصر الطباعة فقط */
+  .barcode-print-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    visibility: visible !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* عرض صفحة الفاتورة عند الطباعة */
+  .invoice-print-root {
+    display: flex !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
+    min-height: 100vh !important;
   }
 }

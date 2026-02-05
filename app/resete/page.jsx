@@ -114,7 +114,7 @@ function Resete() {
       <div className={styles.qrContainer}>
         <QRCodeCanvas 
           value="https://www.tiktok.com/@s3edahmed1"
-          size={100}
+          size={80}
         />
       </div>
 
