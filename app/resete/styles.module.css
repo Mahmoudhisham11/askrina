@@ -315,29 +315,31 @@
 /* Print Styles */
 @media print {
   @page {
-    size: 80mm auto;
+    size: 80mm; /* بدون auto */
     margin: 0;
   }
-
-  body {
-    background: #ffffff;
-    width: 80mm;
-    margin: 0 auto;
-    padding: 0;
+  
+  html, body {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
   }
 
   .resete {
-    background: #ffffff;
-    padding: 0;
-    margin: 0 auto;
-    width: 80mm;
-    max-width: 80mm;
-    height: auto;
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    height: auto !important;
+    min-height: auto !important;
+    display: block !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
   }
 
   .btnBack,
@@ -347,17 +349,21 @@
   }
 
   .invoice {
-    max-width: 80mm;
-    width: 100%;
-    margin: 0 auto;
-    padding: 8px 6px;
-    box-shadow: none;
-    border-radius: 0;
-    border: none;
+    max-width: 80mm !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 8px 6px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
     page-break-inside: avoid;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: block !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    direction: rtl !important; /* إعادة تعيين direction للفاتورة */
+    text-align: right !important; /* إعادة تعيين text-align للفاتورة */
   }
 
   .header {

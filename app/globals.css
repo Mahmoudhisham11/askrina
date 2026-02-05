@@ -152,15 +152,32 @@ tfoot {
 }
 @media print {
   @page {
-    size: 80mm auto; /* مناسب للطابعة الحرارية Xprinter XP-Q807K - auto للطول */
+    size: 80mm; /* بدون auto - بعض المتصفحات لا تدعم auto */
     margin: 0;
   }
- 
+  
+  /* إعادة تعيين html و body بالكامل */
+  html {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    direction: ltr !important; /* إعادة تعيين direction للطباعة */
+    text-align: left !important; /* إعادة تعيين text-align */
+  }
+  
   body {
-    margin: 0;
-    padding: 0;
-    width: 80mm;
-    background: #ffffff;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    background: #ffffff !important;
+    direction: ltr !important; /* إعادة تعيين direction */
+    text-align: left !important; /* إعادة تعيين text-align */
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
   }
 
   /* إخفاء جميع العناصر ما عدا الفاتورة */
@@ -174,7 +191,11 @@ tfoot {
     width: 80mm !important;
     max-width: 80mm !important;
     margin: 0 auto !important;
+    padding: 0 !important;
     height: auto !important;
     min-height: auto !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
   }
 }

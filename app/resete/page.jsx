@@ -25,7 +25,52 @@ function Resete() {
 
   const handlePrint = () => {
     if (!invoice) return alert("لا توجد فاتورة للطباعة");
-    window.print();
+    
+    // إضافة style مباشر قبل الطباعة للتأكد من التوسيط
+    const style = document.createElement('style');
+    style.id = 'print-invoice-style';
+    style.textContent = `
+      @media print {
+        @page {
+          size: 80mm;
+          margin: 0;
+        }
+        html, body {
+          width: 80mm !important;
+          max-width: 80mm !important;
+          margin: 0 auto !important;
+          padding: 0 !important;
+          background: #ffffff !important;
+        }
+        .invoice-print-root {
+          width: 80mm !important;
+          max-width: 80mm !important;
+          margin: 0 auto !important;
+          padding: 0 !important;
+        }
+      }
+    `;
+    
+    // إزالة style قديم إذا كان موجود
+    const oldStyle = document.getElementById('print-invoice-style');
+    if (oldStyle) {
+      document.head.removeChild(oldStyle);
+    }
+    
+    document.head.appendChild(style);
+    
+    // انتظار قليل ثم الطباعة
+    setTimeout(() => {
+      window.print();
+      
+      // إزالة style بعد الطباعة
+      setTimeout(() => {
+        const styleToRemove = document.getElementById('print-invoice-style');
+        if (styleToRemove) {
+          document.head.removeChild(styleToRemove);
+        }
+      }, 1000);
+    }, 100);
   };
 
   if (!invoice) {
