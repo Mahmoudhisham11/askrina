@@ -152,7 +152,13 @@ tfoot {
 }
 @media print {
   @page {
-    size: auto;
+    size: A4;
     margin: 0;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: white;
   }
 }

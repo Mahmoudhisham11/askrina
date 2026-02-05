@@ -85,16 +85,33 @@ function Resete() {
       </div>
 
       <div className={styles.text}>
-        <p>المدفوع: {invoice.total} ج.م</p>
-        <p>المتبقي: 0.0</p>
-        <p>عدد الاصناف:<span style={{border: '2px solid black', padding: "5px"}}>{invoice.items?.length || 0}</span></p>
-        <p>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
-        <p style={{ textAlign: 'center', marginTop: '5px'}}>رقم الهاتف: 01113865582</p>
-        <p style={{ textAlign: 'center', marginTop: '5px'}}>شكراً لتعاملكم معنا!</p>
+        <div className={styles.summarySection}>
+          <div className={styles.summaryRow}>
+            <span className={styles.summaryLabel}>المدفوع:</span>
+            <span className={styles.summaryValue}>{invoice.total} ج.م</span>
+          </div>
+          <div className={styles.summaryRow}>
+            <span className={styles.summaryLabel}>المتبقي:</span>
+            <span className={styles.summaryValue}>0.00 ج.م</span>
+          </div>
+          <div className={styles.summaryRow}>
+            <span className={styles.summaryLabel}>عدد الأصناف:</span>
+            <span className={styles.summaryValue}>{invoice.items?.length || 0}</span>
+          </div>
+        </div>
+        
+        <div className={styles.divider}></div>
+        
+        <div className={styles.contactSection}>
+          <p className={styles.contactInfo}>العنوان: الخصوص الشارع العمومي امام قسم الخصوص</p>
+          <p className={styles.contactInfo}>رقم الهاتف: 01113865582</p>
+        </div>
+        
+        <p className={styles.thankYou}>شكراً لتعاملكم معنا!</p>
       </div>
 
       {/* ✅ إضافة QR Code */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+      <div className={styles.qrContainer}>
         <QRCodeCanvas 
           value="https://www.tiktok.com/@s3edahmed1"
           size={100}
