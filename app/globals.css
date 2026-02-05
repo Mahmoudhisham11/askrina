@@ -152,7 +152,7 @@ tfoot {
 }
 @media print {
   @page {
-    size: 80mm; /* بدون auto - بعض المتصفحات لا تدعم auto */
+    size: 80mm auto; /* إضافة auto لجعل الصفحة بطول المحتوى */
     margin: 0;
   }
   

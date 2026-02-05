@@ -32,7 +32,7 @@ function Resete() {
     style.textContent = `
       @media print {
         @page {
-          size: 80mm;
+          size: 80mm auto;
           margin: 0;
         }
         html, body {
@@ -47,6 +47,12 @@ function Resete() {
           max-width: 80mm !important;
           margin: 0 auto !important;
           padding: 0 !important;
+          height: auto !important;
+        }
+        .qrContainer canvas {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
       }
     `;

@@ -315,7 +315,7 @@
 /* Print Styles */
 @media print {
   @page {
-    size: 80mm; /* بدون auto */
+    size: 80mm auto; /* إضافة auto لجعل الصفحة بطول المحتوى */
     margin: 0;
   }
   
@@ -364,6 +364,8 @@
     transform: none !important;
     direction: rtl !important; /* إعادة تعيين direction للفاتورة */
     text-align: right !important; /* إعادة تعيين text-align للفاتورة */
+    height: auto !important;
+    min-height: auto !important;
   }
 
   .header {
@@ -494,13 +496,25 @@
   }
 
   .qrContainer {
-    margin: 8px 0;
-    padding: 5px;
-    background-color: #ffffff;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    margin: 8px 0 !important;
+    padding: 5px !important;
+    background-color: #ffffff !important;
+    border: none !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .qrContainer canvas {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 90px !important;
+    height: 90px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .footer {
