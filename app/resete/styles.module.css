@@ -100,18 +100,34 @@
     font-size: 16px;
 }
 
+.text {
+    width: 100%;
+    max-width: 384px;
+    margin-bottom: 20px;
+}
+
+.qrContainer {
+    width: 100%;
+    max-width: 384px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
 /* Print styles */
 @media print {
 
     .resete {
         background: none;
-        width: 100%;
-        height: 100vh; /* طول الصفحة بالكامل */
-        margin: 0;
+        width: 80mm;
+        max-width: 80mm;
+        height: auto;
+        margin: 0 auto;
         padding: 0;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* يبدأ من الأعلى */
+        justify-content: flex-start;
         align-items: center;
     }
 
@@ -119,16 +135,24 @@
         display: none; /* إخفاء الأزرار */
     }
 
-    .invoice {
-        max-width: 384px;
+    .title {
         width: 100%;
+        max-width: 80mm;
+        margin: 0 auto;
+        padding: 5px;
+    }
+
+    .invoice {
+        max-width: 80mm;
+        width: 100%;
+        margin: 0 auto;
         padding: 5px;
         font-size: 12px;
         box-sizing: border-box;
         border: none;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* العناصر قريبة من بعض */
+        justify-content: flex-start;
     }
 
     .invoice h3 {
@@ -161,7 +185,27 @@
         font-size: 12px;
     }
 
+    .text {
+        width: 100%;
+        max-width: 80mm;
+        margin: 0 auto;
+        padding: 5px;
+    }
+
+    /* QR Code container */
+    .qrContainer {
+        width: 100%;
+        max-width: 80mm;
+        margin: 0 auto;
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+    }
+
     .footer {
+        width: 100%;
+        max-width: 80mm;
+        margin: 0 auto;
         text-align: center;
         font-size: 12px;
         margin-top: 2px;

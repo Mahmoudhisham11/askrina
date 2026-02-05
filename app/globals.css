@@ -152,11 +152,12 @@ tfoot {
 }
 @media print {
   @page {
-    size: auto;
+    size: 80mm 297mm; /* حجم مناسب للطابعة الحرارية 80mm × 297mm */
     margin: 0;
   }
   body {
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
+    width: 80mm;
   }
 }

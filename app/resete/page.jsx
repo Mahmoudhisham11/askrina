@@ -115,7 +115,7 @@ function Resete() {
       </div>
 
       {/* ✅ إضافة QR Code */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+      <div className={styles.qrContainer}>
         <QRCodeCanvas 
           value="https://www.tiktok.com/@s3edahmed1"
           size={100}
