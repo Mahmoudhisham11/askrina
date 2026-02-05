@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/app/firebase';
 import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc, doc } from 'firebase/firestore';
@@ -11,7 +11,8 @@ import Sidebar from '@/components/Dashboard/Sidebar';
 // Force dynamic rendering - this page uses useSearchParams, localStorage, and Firebase
 export const dynamic = 'force-dynamic';
 
-export default function AddProduct() {
+// Component that uses useSearchParams - must be wrapped in Suspense
+function AddProductContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState('single'); // 'single' | 'invoice'
@@ -1325,3 +1326,20 @@ export default function AddProduct() {
   );
 }
 
+// Loading fallback component
+function AddProductLoading() {
+  return (
+    <div className={styles.loading}>
+      <p>جاري التحميل...</p>
+    </div>
+  );
+}
+
+// Main export with Suspense boundary for useSearchParams
+export default function AddProduct() {
+  return (
+    <Suspense fallback={<AddProductLoading />}>
+      <AddProductContent />
+    </Suspense>
+  );
+}
