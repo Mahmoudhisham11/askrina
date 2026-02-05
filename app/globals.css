@@ -152,7 +152,7 @@ tfoot {
 }
 @media print {
   @page {
-    size: auto;
+    size: 80mm auto; /* حجم مناسب للطابعة الحرارية Xprinter Q80 */
     margin: 0;
   }
   
@@ -190,9 +190,10 @@ tfoot {
     display: flex !important;
     visibility: visible !important;
     position: static !important;
-    width: 100% !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
     height: auto !important;
     background: white !important;
-    min-height: 100vh !important;
+    margin: 0 auto !important;
   }
 }

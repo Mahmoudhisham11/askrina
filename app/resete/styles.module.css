@@ -255,10 +255,10 @@
 
     .resete {
         background: white !important;
-        width: 100% !important;
-        min-height: 100vh !important;
+        width: 80mm !important;
+        max-width: 80mm !important;
         height: auto !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
@@ -280,9 +280,9 @@
 
     .title {
         width: 100% !important;
-        max-width: 210mm !important;
+        max-width: 80mm !important;
         margin: 0 auto 2mm auto !important;
-        padding: 5mm 10mm 3mm 10mm !important;
+        padding: 5mm 3mm 3mm 3mm !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -309,10 +309,10 @@
     }
 
     .invoice {
-        max-width: 210mm !important;
+        max-width: 80mm !important;
         width: 100% !important;
         margin: 0 auto 3mm auto !important;
-        padding: 5mm 10mm !important;
+        padding: 5mm 3mm !important;
         font-size: 12px !important;
         box-sizing: border-box !important;
         border: none !important;
@@ -399,10 +399,10 @@
     }
 
     .text {
-        max-width: 210mm !important;
+        max-width: 80mm !important;
         width: 100% !important;
         margin: 0 auto 3mm auto !important;
-        padding: 5mm 10mm !important;
+        padding: 5mm 3mm !important;
         font-size: 12px !important;
         box-sizing: border-box !important;
         box-shadow: none !important;
@@ -477,10 +477,10 @@
 
     /* QR Code container */
     .qrContainer {
-        max-width: 210mm !important;
+        max-width: 80mm !important;
         width: 100% !important;
         margin: 0 auto 2mm auto !important;
-        padding: 3mm 10mm !important;
+        padding: 3mm 3mm !important;
         display: flex !important;
         justify-content: center !important;
         background: white !important;
@@ -499,10 +499,10 @@
     }
 
     .footer {
-        max-width: 210mm !important;
+        max-width: 80mm !important;
         width: 100% !important;
         margin: 0 auto !important;
-        padding: 3mm 10mm !important;
+        padding: 3mm 3mm !important;
         text-align: center !important;
         font-size: 10px !important;
         background: #f9f9f9 !important;
