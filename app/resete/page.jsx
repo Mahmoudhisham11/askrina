@@ -33,53 +33,104 @@ function Resete() {
   }
 
   return (
-    <div className={styles.resete}>
-
-      {/* ❌ ده لا يطبع */}
+    <div className={`${styles.resete} invoice-print-root`}>
+      {/* Navigation button - hidden when printing */}
       <button onClick={() => router.push('/')} className={styles.btnBack}>
         رجوع
       </button>
 
-      {/* ✅ كل ما يُطبع داخل invoice فقط */}
+      {/* Invoice Container */}
       <div className={styles.invoice}>
+        {/* Header Section */}
+        <div className={styles.header}>
+          <div className={styles.logoPlaceholder}>
+            <span>اسكرينا</span>
+          </div>
+          <h1 className={styles.invoiceTitle}>فاتورة مبيعات</h1>
+        </div>
 
-        <h3>فاتورة مبيعات</h3>
-        <p>رقم الفاتورة: {invoice.invoiceNumber}</p>
-        <p>التاريخ: {currentDate}</p>
-        <p>العميل: {invoice.customerName}</p>
-        <p>الهاتف: {invoice.customerPhone}</p>
+        {/* Invoice Details Section */}
+        <div className={styles.invoiceDetails}>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>رقم الفاتورة:</span>
+            <span className={styles.detailValue}>{invoice.invoiceNumber || 'غير متوفر'}</span>
+          </div>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>التاريخ:</span>
+            <span className={styles.detailValue}>{currentDate}</span>
+          </div>
+        </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>كود</th>
-              <th>المنتج</th>
-              <th>الكمية</th>
-              <th>السعر</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoice.items.map((item, index) => (
-              <tr key={index}>
-                <td>{item.productCode}</td>
-                <td>{item.productName}</td>
-                <td>{item.quantity}</td>
-                <td>{item.totalPrice} ج.م</td>
+        {/* Customer Details Section */}
+        <div className={styles.customerDetails}>
+          <div className={styles.sectionTitle}>بيانات العميل</div>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>الاسم:</span>
+            <span className={styles.detailValue}>{invoice.customerName || 'غير معروف'}</span>
+          </div>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>الهاتف:</span>
+            <span className={styles.detailValue}>{invoice.customerPhone || 'غير متوفر'}</span>
+          </div>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>العنوان:</span>
+            <span className={styles.detailValue}>الخصوص – الشارع العمومي</span>
+          </div>
+        </div>
+
+        {/* Items Table */}
+        <div className={styles.tableContainer}>
+          <table className={styles.itemsTable}>
+            <thead>
+              <tr>
+                <th>كود المنتج</th>
+                <th>اسم المنتج</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الإجمالي</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan={4}>الإجمالي: {invoice.total} ج.م</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              {invoice.items && invoice.items.length > 0 ? (
+                invoice.items.map((item, index) => {
+                  const itemTotal = (item.totalPrice || item.unitPrice * (item.quantity || 0) || 0);
+                  return (
+                    <tr key={item.productId || index}>
+                      <td>{item.productCode || item.code || '—'}</td>
+                      <td className={styles.productNameCell}>{item.productName || item.name || '—'}</td>
+                      <td>{item.quantity || 0}</td>
+                      <td className={styles.priceCell}>{item.unitPrice || item.finalPrice || 0} ج.م</td>
+                      <td className={styles.priceCell}>{itemTotal} ج.م</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={5} className={styles.emptyCell}>لا توجد منتجات</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-        <p>عدد الأصناف: {invoice.items.length}</p>
-        <p>العنوان: الخصوص – الشارع العمومي</p>
-        <p style={{ textAlign: "center" }}>01113865582</p>
+        {/* Total Section */}
+        <div className={styles.totalSection}>
+          <div className={styles.totalRow}>
+            <span className={styles.totalLabel}>عدد الأصناف:</span>
+            <span className={styles.totalValue}>{invoice.items?.length || 0}</span>
+          </div>
+          <div className={styles.totalRow}>
+            <span className={styles.totalLabel}>الإجمالي الكلي:</span>
+            <span className={styles.totalAmount}>{invoice.total || 0} ج.م</span>
+          </div>
+        </div>
 
-        {/* QR */}
+        {/* Contact Info */}
+        <div className={styles.contactInfo}>
+          <p className={styles.contactText}>رقم الهاتف: 01113865582</p>
+        </div>
+
+        {/* QR Code Section */}
         <div className={styles.qrContainer}>
           <QRCodeCanvas
             value="https://www.tiktok.com/@s3edahmed1"
@@ -87,15 +138,17 @@ function Resete() {
           />
         </div>
 
+        {/* Footer */}
         <div className={styles.footer}>
-          شكراً لتعاملكم معنا
+          <p className={styles.footerText}>شكراً لتعاملكم معنا</p>
         </div>
-
       </div>
 
-      {/* ❌ زر الطباعة لا يُطبع */}
+      {/* Print Button - hidden when printing */}
       <div className={styles.btn}>
-        <button onClick={handlePrint}>طباعة</button>
+        <button onClick={handlePrint} className={styles.printBtn}>
+          طباعة الفاتورة
+        </button>
       </div>
     </div>
   );

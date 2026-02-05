@@ -152,7 +152,7 @@ tfoot {
 }
 @media print {
   @page {
-    size: auto;
+    size: 80mm auto; /* مناسب للطابعة الحرارية Xprinter XP-Q807K */
     margin: 0;
   }
  
@@ -160,5 +160,19 @@ tfoot {
     margin: 0;
     padding: 0;
     width: 80mm;
+    background: #ffffff;
+  }
+
+  /* إخفاء جميع العناصر ما عدا الفاتورة */
+  body > *:not(.invoice-print-root) {
+    display: none !important;
+  }
+
+  /* عرض الفاتورة عند الطباعة */
+  .invoice-print-root {
+    display: block !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
   }
 }
