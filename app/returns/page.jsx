@@ -16,6 +16,7 @@ export default function Returns() {
   const [isLoading, setIsLoading] = useState(true);
   const [returnItem, setReturnItem] = useState(null);
   const [returnQuantity, setReturnQuantity] = useState(1);
+  const [returnValue, setReturnValue] = useState(0);
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [isProcessingReturn, setIsProcessingReturn] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
@@ -192,6 +193,16 @@ export default function Returns() {
   const handleReturnItem = (item) => {
     setReturnItem(item);
     setReturnQuantity(1);
+    
+    // حساب القيمة الابتدائية للموبايلات فقط
+    const isPhone = item.type === 'phone' || item.battery !== undefined;
+    if (isPhone) {
+      const finalSellPrice = (item.unitPrice || 0) - (item.itemDiscount || 0);
+      setReturnValue(finalSellPrice * 1); // القيمة الابتدائية لقطعة واحدة
+    } else {
+      setReturnValue(0);
+    }
+    
     setShowReturnModal(true);
   };
 
@@ -200,6 +211,7 @@ export default function Returns() {
     setShowReturnModal(false);
     setReturnItem(null);
     setReturnQuantity(1);
+    setReturnValue(0);
   };
 
   // تأكيد المرتجع
@@ -209,6 +221,13 @@ export default function Returns() {
     // التحقق من صحة الكمية
     if (returnQuantity < 1 || returnQuantity > returnItem.quantity) {
       showNotification('❌ الكمية المدخلة غير صحيحة', 'error');
+      return;
+    }
+
+    // التحقق من قيمة المرتجع للموبايلات
+    const isPhone = returnItem.type === 'phone' || returnItem.battery !== undefined;
+    if (isPhone && returnValue <= 0) {
+      showNotification('❌ قيمة المرتجع يجب أن تكون أكبر من صفر', 'error');
       return;
     }
 
@@ -342,24 +361,42 @@ export default function Returns() {
       }
 
       // 4. إضافة المصروفات في expenses
-      // حساب سعر البيع النهائي بعد الخصم
-      const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
+      // تحديد إذا كان المنتج موبايل
+      const isPhone = returnItem.type === 'phone' || returnItem.battery !== undefined;
       
-      // حساب المبلغ المرتجع (سعر البيع النهائي × الكمية)
-      const returnAmount = finalSellPrice * returnQuantity;
-      
-      // حساب الربح المرتجع بناءً على النسبة من الربح الأصلي
-      // إذا كان الربح محفوظ في الفاتورة، نستخدمه مباشرة
-      let returnProfit = 0;
-      if (returnItem.profit !== undefined && returnItem.profit !== null) {
-        // حساب الربح لكل قطعة من الربح الإجمالي
-        const profitPerUnit = returnItem.profit / (returnItem.quantity || 1);
-        returnProfit = profitPerUnit * returnQuantity;
+      // حساب المبلغ المرتجع
+      let returnAmount;
+      if (isPhone) {
+        // للموبايلات: استخدام قيمة المرتجع المدخلة
+        returnAmount = returnValue;
       } else {
-        // إذا لم يكن الربح محفوظاً، نحسبه من الفرق بين سعر البيع والشراء
-        const buyPrice = returnItem.buyPrice || 0;
-        const profitPerUnit = finalSellPrice - buyPrice;
-        returnProfit = profitPerUnit * returnQuantity;
+        // للإكسسوارات: حساب سعر البيع النهائي بعد الخصم × الكمية
+        const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
+        returnAmount = finalSellPrice * returnQuantity;
+      }
+
+      // حساب الربح المرتجع
+      let returnProfit = 0;
+      if (isPhone) {
+        // للموبايلات: حساب الفرق بين سعر البيع الأصلي وقيمة المرتجع
+        // هذا الفرق يُضاف في صافي الربح
+        const originalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
+        const originalTotalSellPrice = originalSellPrice * returnQuantity; // إجمالي سعر البيع الأصلي
+        const difference = originalTotalSellPrice - returnValue; // الفرق بين سعر البيع وقيمة المرتجع
+        returnProfit = Math.max(0, difference); // الفرق يُضاف في صافي الربح (بقيمة سالبة في Dashboard)
+      } else {
+        // للإكسسوارات: حساب الربح بناءً على النسبة من الربح الأصلي
+        if (returnItem.profit !== undefined && returnItem.profit !== null) {
+          // حساب الربح لكل قطعة من الربح الإجمالي
+          const profitPerUnit = returnItem.profit / (returnItem.quantity || 1);
+          returnProfit = profitPerUnit * returnQuantity;
+        } else {
+          // إذا لم يكن الربح محفوظاً، نحسبه من الفرق بين سعر البيع والشراء
+          const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
+          const buyPrice = returnItem.buyPrice || 0;
+          const profitPerUnit = finalSellPrice - buyPrice;
+          returnProfit = profitPerUnit * returnQuantity;
+        }
       }
 
       // إضافة مصروف للمبلغ (يخصم من صافي المبيع)
@@ -372,11 +409,12 @@ export default function Returns() {
       };
       await addDoc(collection(db, 'expenses'), expenseDataAmount);
 
-      // إضافة مصروف للربح (يخصم من صافي الربح) - فقط إذا كان الربح أكبر من 0
+      // إضافة مصروف للربح (يضاف في صافي الربح فقط، لا يضاف في إجمالي المصروفات)
+      // فقط إذا كان الفرق أكبر من 0
       if (returnProfit > 0) {
         const expenseDataProfit = {
           shop: shop,
-          amount: returnProfit,
+          amount: -returnProfit, // قيمة سالبة للربح (سيتم إضافته في صافي الربح في Dashboard)
           description: `مرتجع - ${returnItem.productName} (ربح)`,
           date: Timestamp.fromDate(new Date()), // تاريخ اليوم الحالي
           createdAt: new Date()
@@ -643,7 +681,15 @@ export default function Returns() {
                       onChange={(e) => {
                         const value = parseInt(e.target.value) || 1;
                         const maxQuantity = returnItem.quantity || 1;
-                        setReturnQuantity(Math.min(Math.max(1, value), maxQuantity));
+                        const newQuantity = Math.min(Math.max(1, value), maxQuantity);
+                        setReturnQuantity(newQuantity);
+                        
+                        // تحديث قيمة المرتجع تلقائياً للموبايلات
+                        const isPhone = returnItem.type === 'phone' || returnItem.battery !== undefined;
+                        if (isPhone) {
+                          const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
+                          setReturnValue(finalSellPrice * newQuantity);
+                        }
                       }}
                       className={styles.returnQuantityInput}
                     />
@@ -651,6 +697,26 @@ export default function Returns() {
                       (الحد الأقصى: {returnItem.quantity || 0} قطعة)
                     </span>
                   </div>
+
+                  {/* حقل قيمة المرتجع للموبايلات فقط */}
+                  {(returnItem.type === 'phone' || returnItem.battery !== undefined) && (
+                    <div className={styles.returnValueSection}>
+                      <label className={styles.returnValueLabel}>
+                        قيمة المرتجع (ج.م):
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={returnValue}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0;
+                          setReturnValue(Math.max(0, value));
+                        }}
+                        className={styles.returnValueInput}
+                      />
+                    </div>
+                  )}
 
                   <div className={styles.returnWarning}>
                     <p>⚠️ سيتم إرجاع المنتج للمخزن وحذفه من الفاتورة وإضافة المصروف</p>
