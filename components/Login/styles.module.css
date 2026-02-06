@@ -175,6 +175,20 @@
   border-color: rgba(148, 163, 184, 0.4);
 }
 
+.passwordToggle {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+}
+
 .loginBtn {
   width: 100%;
   height: 50px;

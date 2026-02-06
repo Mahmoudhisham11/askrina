@@ -5,7 +5,7 @@ import logo from "../../public/images/logo.png"
 import { useState } from "react";
 import { db } from "@/app/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { HiOutlineLockClosed } from "react-icons/hi2";
+import { HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeSlash } from "react-icons/hi2";
 import { HiOutlineEnvelope } from "react-icons/hi2";
 import { IoStorefrontOutline } from "react-icons/io5";
 
@@ -14,6 +14,8 @@ function Login() {
     const [userName, setUserName] = useState('')
     const [password, setPassword] = useState('')
     const [shop, setShop] = useState('') // ده يستخدم بس عند إنشاء الحساب
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [showCreatePassword, setShowCreatePassword] = useState(false);
 
     // ✅ إنشاء حساب جديد
     const handleCreatAcc = async () => {
@@ -114,12 +116,20 @@ function Login() {
                         <div className={styles.inputWrapper}>
                             <HiOutlineLockClosed className={styles.inputIcon} />
                             <input 
-                                type="password" 
+                                type={showLoginPassword ? "text" : "password"} 
                                 value={password}
                                 placeholder="كلمة المرور" 
                                 onChange={(e) => setPassword(e.target.value)}
                                 className={styles.input}
                             />
+                            <button
+                                type="button"
+                                className={styles.passwordToggle}
+                                onClick={() => setShowLoginPassword((prev) => !prev)}
+                                aria-label={showLoginPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                            >
+                                {showLoginPassword ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+                            </button>
                         </div>
                         <button className={styles.loginBtn} onClick={handleLogin}>
                             تسجيل الدخول
@@ -151,12 +161,20 @@ function Login() {
                         <div className={styles.inputWrapper}>
                             <HiOutlineLockClosed className={styles.inputIcon} />
                             <input 
-                                type="password" 
+                                type={showCreatePassword ? "text" : "password"} 
                                 value={password} 
                                 placeholder="كلمة المرور" 
                                 onChange={(e) => setPassword(e.target.value)}
                                 className={styles.input}
                             />
+                            <button
+                                type="button"
+                                className={styles.passwordToggle}
+                                onClick={() => setShowCreatePassword((prev) => !prev)}
+                                aria-label={showCreatePassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                            >
+                                {showCreatePassword ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+                            </button>
                         </div>
                         <div className={styles.inputWrapper}>
                             <IoStorefrontOutline className={styles.inputIcon} />
