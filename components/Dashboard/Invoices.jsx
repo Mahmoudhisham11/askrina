@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { db } from '@/app/firebase';
-import { collection, getDocs, query, where, updateDoc, doc, getDoc, deleteDoc, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, where, updateDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { HiOutlineSearch, HiOutlineEye } from 'react-icons/hi';
 import { HiOutlineReceiptPercent, HiOutlineArrowUturnLeft } from 'react-icons/hi2';
 import styles from './Invoices.module.css';
@@ -94,7 +94,7 @@ export default function Invoices() {
       return;
     }
 
-    const query = searchQuery.toLowerCase();
+    const queryText = searchQuery.toLowerCase();
     const filtered = invoices.filter(invoice => {
       const invoiceNumber = invoice.invoiceNumber?.toString() || '';
       return invoiceNumber.includes(searchQuery);
@@ -243,7 +243,7 @@ export default function Invoices() {
     });
   };
 
-  // معالجة المرتجع الفعلية
+  // معالجة المرتجع الفعلية (بدون تسجيل مصروفات في expenses)
   const processReturn = async () => {
     if (!returnItem || !selectedInvoice) return;
 
@@ -359,49 +359,7 @@ export default function Invoices() {
         
         showNotification(`✅ تم إرجاع ${returnQuantity} قطعة بنجاح`, 'success');
       }
-
-      // 4. إضافة المصروفات في expenses
-      // حساب سعر البيع النهائي بعد الخصم
-      const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
-      
-      // حساب المبلغ المرتجع (سعر البيع النهائي × الكمية)
-      const returnAmount = finalSellPrice * returnQuantity;
-      
-      // حساب الربح المرتجع بناءً على النسبة من الربح الأصلي
-      // إذا كان الربح محفوظ في الفاتورة، نستخدمه مباشرة
-      let returnProfit = 0;
-      if (returnItem.profit !== undefined && returnItem.profit !== null) {
-        // حساب الربح لكل قطعة من الربح الإجمالي
-        const profitPerUnit = returnItem.profit / (returnItem.quantity || 1);
-        returnProfit = profitPerUnit * returnQuantity;
-      } else {
-        // إذا لم يكن الربح محفوظاً، نحسبه من الفرق بين سعر البيع والشراء
-        const buyPrice = returnItem.buyPrice || 0;
-        const profitPerUnit = finalSellPrice - buyPrice;
-        returnProfit = profitPerUnit * returnQuantity;
-      }
-
-      // إضافة مصروف للمبلغ (يخصم من صافي المبيع)
-      const expenseDataAmount = {
-        shop: shop,
-        amount: returnAmount,
-        description: `مرتجع - ${returnItem.productName} (مبلغ)`,
-        date: Timestamp.fromDate(new Date()), // تاريخ اليوم الحالي
-        createdAt: new Date()
-      };
-      await addDoc(collection(db, 'expenses'), expenseDataAmount);
-
-      // إضافة مصروف للربح (يخصم من صافي الربح) - فقط إذا كان الربح أكبر من 0
-      if (returnProfit > 0) {
-        const expenseDataProfit = {
-          shop: shop,
-          amount: returnProfit,
-          description: `مرتجع - ${returnItem.productName} (ربح)`,
-          date: Timestamp.fromDate(new Date()), // تاريخ اليوم الحالي
-          createdAt: new Date()
-        };
-        await addDoc(collection(db, 'expenses'), expenseDataProfit);
-      }
+      // لا توجد إضافة لأي قيود في مجموعة expenses هنا
     } catch (error) {
       console.error('Error processing return:', error);
       showNotification('❌ حدث خطأ أثناء معالجة المرتجع', 'error');
@@ -704,4 +662,5 @@ export default function Invoices() {
     </div>
   );
 }
+
 
