@@ -13,11 +13,10 @@ export default function BarcodePrintContent({ product, formatNumber }) {
       try {
         JsBarcode(barcodeRef.current, product.code.toString(), {
           format: 'CODE128',
-          width: 1.5,
-          height: 40,
-          displayValue: true,
-          fontSize: 10,
-          margin: 5,
+          width: 1,
+          height: 30,
+          displayValue: false,
+          margin: 3,
           textAlign: 'center',
           textPosition: 'bottom'
         });
@@ -31,33 +30,22 @@ export default function BarcodePrintContent({ product, formatNumber }) {
 
   return (
     <div className="barcode-print-content">
+      {/* اسم المنتج - كبير وواضح */}
       <div className="barcode-label">
         {product.name || 'غير محدد'}
       </div>
       
+      {/* الكود - واضح */}
+      <div className="barcode-code">
+        {product.code?.toString() || '-'}
+      </div>
+      
+      {/* الباركود - صغير */}
       <svg ref={barcodeRef} className="barcode"></svg>
       
-      <div className="barcode-info">
-        {product.type === 'phone' && (
-          <>
-            <div className="info-row">
-              <span className="info-label">S:</span>
-              <span className="info-value">{product.storage?.toUpperCase() || '-'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">B:</span>
-              <span className="info-value">{product.battery?.toUpperCase() || '-'}</span>
-            </div>
-          </>
-        )}
-        <div className="info-row">
-          <span className="info-label">C:</span>
-          <span className="info-value">{product.code?.toString().toUpperCase() || '-'}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">PRICE:</span>
-          <span className="info-value">{formatNumber(product.sellPrice || 0)} EGP</span>
-        </div>
+      {/* السعر - كبير وواضح */}
+      <div className="barcode-price">
+        {formatNumber(product.sellPrice || 0)} ج.م
       </div>
     </div>
   );

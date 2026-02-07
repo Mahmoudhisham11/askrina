@@ -215,11 +215,10 @@ export default function Products() {
         try {
           JsBarcode(barcodeRef.current, printProduct.code.toString(), {
             format: 'CODE128',
-            width: 1.5,
-            height: 40,
-            displayValue: true,
-            fontSize: 10,
-            margin: 5,
+            width: 1,
+            height: 30,
+            displayValue: false,
+            margin: 3,
             textAlign: 'center',
             textPosition: 'bottom'
           });
@@ -450,29 +449,14 @@ export default function Products() {
                 {printProduct.name || 'غير محدد'}
               </div>
               
+              <div className={styles.barcodeCode}>
+                {printProduct.code?.toString() || '-'}
+              </div>
+              
               <svg ref={barcodeRef} className={styles.barcode}></svg>
               
-              <div className={styles.barcodeInfo}>
-                {printProduct.type === 'phone' && (
-                  <>
-                    <div className={styles.infoRow}>
-                      <span className={styles.infoLabel}>S:</span>
-                      <span className={styles.infoValue}>{printProduct.storage?.toUpperCase() || '-'}</span>
-                    </div>
-                    <div className={styles.infoRow}>
-                      <span className={styles.infoLabel}>B:</span>
-                      <span className={styles.infoValue}>{printProduct.battery?.toUpperCase() || '-'}</span>
-                    </div>
-                  </>
-                )}
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>C:</span>
-                  <span className={styles.infoValue}>{printProduct.code?.toString().toUpperCase() || '-'}</span>
-              </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>PRICE:</span>
-                  <span className={styles.infoValue}>{formatNumber(printProduct.sellPrice || 0)} EGP</span>
-            </div>
+              <div className={styles.barcodePrice}>
+                {formatNumber(printProduct.sellPrice || 0)} ج.م
               </div>
             </div>
           </div>
