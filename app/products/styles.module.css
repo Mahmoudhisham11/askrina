@@ -529,42 +529,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
+  gap: 8px;
+  padding: 12px;
   background-color: #FFFFFF;
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
-  min-width: 300px;
+  min-width: 250px;
 }
 
 .barcodeLabel {
-  font-size: var(--font-size-lg);
+  font-size: 12px;
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   font-family: 'Tajawal', sans-serif;
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  line-height: 1.2;
 }
 
 .barcode {
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   height: auto;
 }
 
 .barcodeInfo {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .infoRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 3px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -573,7 +574,7 @@
 }
 
 .infoLabel {
-  font-size: var(--font-size-md);
+  font-size: 10px;
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   font-family: 'Courier New', monospace;
@@ -581,7 +582,7 @@
 }
 
 .infoValue {
-  font-size: var(--font-size-md);
+  font-size: 10px;
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   font-family: 'Courier New', monospace;

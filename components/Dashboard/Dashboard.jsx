@@ -81,18 +81,17 @@ export default function Dashboard() {
           const amount = data.amount || 0;
           const description = data.description || '';
           
+          totalExpenses += amount;
+          
           // فصل مصروفات المبلغ عن مصروفات الربح بناءً على الوصف
           if (description.includes('(مبلغ)')) {
             totalAmountExpenses += amount;
-            totalExpenses += amount; // إضافة مصروفات المبلغ في إجمالي المصروفات
           } else if (description.includes('(ربح)')) {
             totalProfitExpenses += amount;
-            // لا نضيف مصروفات الربح في إجمالي المصروفات (تخصم من صافي الربح فقط)
           } else {
             // للمصاريف العادية (غير المرتجعات)، نضيفها لكلا النوعين
             totalAmountExpenses += amount;
             totalProfitExpenses += amount;
-            totalExpenses += amount;
           }
         });
       } catch (error) {

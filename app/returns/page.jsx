@@ -374,16 +374,14 @@ export default function Returns() {
         const finalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
         returnAmount = finalSellPrice * returnQuantity;
       }
-
+      
       // حساب الربح المرتجع
       let returnProfit = 0;
       if (isPhone) {
-        // للموبايلات: حساب الفرق بين سعر البيع الأصلي وقيمة المرتجع
-        // هذا الفرق يُضاف في صافي الربح
-        const originalSellPrice = (returnItem.unitPrice || 0) - (returnItem.itemDiscount || 0);
-        const originalTotalSellPrice = originalSellPrice * returnQuantity; // إجمالي سعر البيع الأصلي
-        const difference = originalTotalSellPrice - returnValue; // الفرق بين سعر البيع وقيمة المرتجع
-        returnProfit = Math.max(0, difference); // الفرق يُضاف في صافي الربح (بقيمة سالبة في Dashboard)
+        // للموبايلات: حساب الربح بناءً على قيمة المرتجع المدخلة
+        const buyPrice = returnItem.buyPrice || 0;
+        const totalBuyPrice = buyPrice * returnQuantity; // إجمالي سعر الشراء للكمية المرجعة
+        returnProfit = Math.max(0, returnValue - totalBuyPrice); // الربح = قيمة المرتجع - سعر الشراء
       } else {
         // للإكسسوارات: حساب الربح بناءً على النسبة من الربح الأصلي
         if (returnItem.profit !== undefined && returnItem.profit !== null) {
@@ -409,12 +407,11 @@ export default function Returns() {
       };
       await addDoc(collection(db, 'expenses'), expenseDataAmount);
 
-      // إضافة مصروف للربح (يضاف في صافي الربح فقط، لا يضاف في إجمالي المصروفات)
-      // فقط إذا كان الفرق أكبر من 0
+      // إضافة مصروف للربح (يخصم من صافي الربح) - فقط إذا كان الربح أكبر من 0
       if (returnProfit > 0) {
         const expenseDataProfit = {
           shop: shop,
-          amount: -returnProfit, // قيمة سالبة للربح (سيتم إضافته في صافي الربح في Dashboard)
+          amount: returnProfit,
           description: `مرتجع - ${returnItem.productName} (ربح)`,
           date: Timestamp.fromDate(new Date()), // تاريخ اليوم الحالي
           createdAt: new Date()

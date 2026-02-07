@@ -13,11 +13,11 @@ export default function BarcodePrintContent({ product, formatNumber }) {
       try {
         JsBarcode(barcodeRef.current, product.code.toString(), {
           format: 'CODE128',
-          width: 2,
-          height: 60,
+          width: 1.5,
+          height: 40,
           displayValue: true,
-          fontSize: 14,
-          margin: 10,
+          fontSize: 10,
+          margin: 5,
           textAlign: 'center',
           textPosition: 'bottom'
         });
