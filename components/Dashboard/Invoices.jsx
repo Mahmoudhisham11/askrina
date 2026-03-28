@@ -87,6 +87,14 @@ export default function Invoices() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !shop) return;
+    const onShiftClosed = () => fetchInvoices();
+    window.addEventListener('shiftClosed', onShiftClosed);
+    return () => window.removeEventListener('shiftClosed', onShiftClosed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shop]);
+
   // البحث برقم الفاتورة
   useEffect(() => {
     if (!searchQuery.trim()) {

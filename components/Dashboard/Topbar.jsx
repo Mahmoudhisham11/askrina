@@ -9,7 +9,7 @@ import { HiOutlineComputerDesktop } from 'react-icons/hi2';
 import { HiOutlineXCircle } from 'react-icons/hi2';
 import { useTheme } from '@/contexts/ThemeContext';
 import { db } from '@/app/firebase';
-import { collection, getDocs, query, where, addDoc, deleteDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, where, addDoc, deleteDoc, doc } from 'firebase/firestore';
 
 export default function Topbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -143,13 +143,23 @@ export default function Topbar() {
     setShowConfirmModal(true);
   };
 
-  const handleConfirm = () => {
-    if (confirmCallback) {
-      confirmCallback();
-    }
+  const getShopId = () => {
+    if (typeof window === 'undefined') return '';
+    return (localStorage.getItem('shop') || '').trim();
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmCallback) return;
+    const cb = confirmCallback;
     setShowConfirmModal(false);
     setConfirmMessage('');
     setConfirmCallback(null);
+    try {
+      await cb();
+    } catch (err) {
+      console.error('Confirm action failed:', err);
+      showNotification('❌ حدث خطأ أثناء تنفيذ العملية', 'error');
+    }
   };
 
   const handleCancelConfirm = () => {
@@ -159,13 +169,14 @@ export default function Topbar() {
   };
 
   const handleCloseShift = () => {
-    if (!shop) {
+    const shopId = getShopId();
+    if (!shopId) {
       showNotification('❌ يجب تسجيل الدخول أولاً', 'error');
       return;
     }
 
     showConfirm(
-      'هل أنت متأكد من تقفيل الوردية؟\nسيتم نقل جميع المبيعات والمصاريف اليومية إلى التقارير.',
+      'هل أنت متأكد من تقفيل الوردية؟\nسيتم نقل كل الفواتير من المبيعات وكل المصاريف إلى التقارير (للفرع الحالي فقط).',
       async () => {
         await processCloseShift();
       }
@@ -173,118 +184,49 @@ export default function Topbar() {
   };
 
   const processCloseShift = async () => {
+    const shopId = getShopId();
+    if (!shopId) {
+      showNotification('❌ يجب تسجيل الدخول أولاً', 'error');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // حساب تاريخ اليوم (بداية ونهاية)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
+      const salesQuery = query(
+        collection(db, 'sales'),
+        where('shop', '==', shopId)
+      );
+      const salesSnapshot = await getDocs(salesQuery);
 
-      const todayStart = Timestamp.fromDate(today);
-      const todayEnd = Timestamp.fromDate(tomorrow);
-
-      // جلب المبيعات اليومية
-      let salesSnapshot;
-      try {
-        const salesQuery = query(
-          collection(db, 'sales'),
-          where('shop', '==', shop),
-          where('date', '>=', todayStart),
-          where('date', '<', todayEnd)
-        );
-        salesSnapshot = await getDocs(salesQuery);
-      } catch (error) {
-        // إذا فشل الاستعلام، جلب جميع المبيعات وتصفيتها يدوياً
-        console.log('Query with date range failed, fetching all sales:', error);
-        const salesQuery = query(
-          collection(db, 'sales'),
-          where('shop', '==', shop)
-        );
-        salesSnapshot = await getDocs(salesQuery);
-      }
-
-      // نقل المبيعات اليومية إلى reports
       let salesCount = 0;
       for (const docSnapshot of salesSnapshot.docs) {
         const data = docSnapshot.data();
-        
-        // التحقق من أن التاريخ ضمن اليوم الحالي
-        let invoiceDate;
-        if (data.date?.toDate) {
-          invoiceDate = data.date.toDate();
-        } else if (data.date instanceof Date) {
-          invoiceDate = data.date;
-        } else if (data.createdAt?.toDate) {
-          invoiceDate = data.createdAt.toDate();
-        } else if (data.createdAt instanceof Date) {
-          invoiceDate = data.createdAt;
-        } else {
-          continue; // تخطي إذا لم يكن هناك تاريخ
-        }
-
-        // التحقق من أن التاريخ ضمن اليوم
-        if (invoiceDate >= today && invoiceDate < tomorrow) {
-          // نقل إلى reports
-          await addDoc(collection(db, 'reports'), data);
-          // حذف من sales
-          await deleteDoc(doc(db, 'sales', docSnapshot.id));
-          salesCount++;
-        }
+        await addDoc(collection(db, 'reports'), data);
+        await deleteDoc(doc(db, 'sales', docSnapshot.id));
+        salesCount++;
       }
 
-      // جلب المصاريف اليومية
-      let expensesSnapshot;
-      try {
-        const expensesQuery = query(
-          collection(db, 'expenses'),
-          where('shop', '==', shop),
-          where('date', '>=', todayStart),
-          where('date', '<', todayEnd)
-        );
-        expensesSnapshot = await getDocs(expensesQuery);
-      } catch (error) {
-        // إذا فشل الاستعلام، جلب جميع المصاريف وتصفيتها يدوياً
-        console.log('Query with date range failed, fetching all expenses:', error);
-        const expensesQuery = query(
-          collection(db, 'expenses'),
-          where('shop', '==', shop)
-        );
-        expensesSnapshot = await getDocs(expensesQuery);
-      }
+      const expensesQuery = query(
+        collection(db, 'expenses'),
+        where('shop', '==', shopId)
+      );
+      const expensesSnapshot = await getDocs(expensesQuery);
 
-      // نقل المصاريف اليومية إلى expensesReports
       let expensesCount = 0;
       for (const docSnapshot of expensesSnapshot.docs) {
         const data = docSnapshot.data();
-        
-        // التحقق من أن التاريخ ضمن اليوم الحالي
-        let expenseDate;
-        if (data.date?.toDate) {
-          expenseDate = data.date.toDate();
-        } else if (data.date instanceof Date) {
-          expenseDate = data.date;
-        } else if (data.createdAt?.toDate) {
-          expenseDate = data.createdAt.toDate();
-        } else if (data.createdAt instanceof Date) {
-          expenseDate = data.createdAt;
-        } else {
-          continue; // تخطي إذا لم يكن هناك تاريخ
-        }
+        await addDoc(collection(db, 'expensesReports'), data);
+        await deleteDoc(doc(db, 'expenses', docSnapshot.id));
+        expensesCount++;
+      }
 
-        // التحقق من أن التاريخ ضمن اليوم
-        if (expenseDate >= today && expenseDate < tomorrow) {
-          // نقل إلى expensesReports
-          await addDoc(collection(db, 'expensesReports'), data);
-          // حذف من expenses
-          await deleteDoc(doc(db, 'expenses', docSnapshot.id));
-          expensesCount++;
-        }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('shiftClosed'));
       }
 
       showNotification(
-        `✅ تم تقفيل الوردية بنجاح\nتم نقل ${salesCount} فاتورة و ${expensesCount} مصروف`,
+        `✅ تم تقفيل الوردية بنجاح\nتم نقل ${salesCount} فاتورة و ${expensesCount} مصروف إلى التقارير`,
         'success'
       );
     } catch (error) {
@@ -400,8 +342,9 @@ export default function Topbar() {
                 إلغاء
               </button>
               <button
+                type="button"
                 className={styles.confirmBtn}
-                onClick={handleConfirm}
+                onClick={() => void handleConfirm()}
                 disabled={isProcessing}
               >
                 {isProcessing ? 'جاري المعالجة...' : 'تأكيد'}

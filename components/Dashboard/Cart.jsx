@@ -15,6 +15,8 @@ export default function Cart({ onInvoiceSaved }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItems, setCartItems] = useState([]);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
+  /** قيم الخصم كما يكتبها المستخدم في نافذة الخصم (نص حر؛ التحقق عند blur أو الإغلاق) */
+  const [discountDrafts, setDiscountDrafts] = useState({});
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -98,6 +100,20 @@ export default function Cart({ onInvoiceSaved }) {
     }
   }, [notification.show]);
 
+  // عند فتح نافذة الخصم: إعادة تهيئة المسودات حسب العربة (فارغ بدل 0)
+  useEffect(() => {
+    if (!showDiscountModal) return;
+    setDiscountDrafts(
+      Object.fromEntries(
+        cartItems.map((item) => {
+          const d = item.itemDiscount || 0;
+          return [item.id, d > 0 ? String(d) : ''];
+        })
+      )
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDiscountModal]);
+
   const showNotification = (message, type = 'success') => {
     if (notificationTimerRef.current) {
       clearTimeout(notificationTimerRef.current);
@@ -168,6 +184,23 @@ export default function Cart({ onInvoiceSaved }) {
     showNotification('✅ تم إعادة تعيين الطلب', 'success');
   };
 
+  /** أقصى خصم مسموح للقطعة الواحدة (ج.م) — السعر النهائي لا يقل عن سعر الجملة */
+  const getMaxDiscountPerUnit = (item) => {
+    const sell = Number(item.sellPrice) || 0;
+    const buy = Number(item.buyPrice) || 0;
+    return Math.max(0, sell - buy);
+  };
+
+  const calculateGrossRetailSubtotal = () =>
+    cartItems.reduce((sum, item) => sum + (Number(item.sellPrice) || 0) * item.quantity, 0);
+
+  const calculateWholesaleSubtotal = () =>
+    cartItems.reduce((sum, item) => sum + (Number(item.buyPrice) || 0) * item.quantity, 0);
+
+  /** مجموع أقصى خصم مسموح للفاتورة = فرق إجمالي البيع عن إجمالي الجملة (عند sell ≥ buy لكل سطر) */
+  const calculateMaxAllowedTotalDiscount = () =>
+    cartItems.reduce((sum, item) => sum + getMaxDiscountPerUnit(item) * item.quantity, 0);
+
   // حساب إجمالي منتج بعد خصمه
   const calculateItemTotal = (item) => {
     const finalPrice = item.sellPrice - (item.itemDiscount || 0);
@@ -208,12 +241,106 @@ export default function Cart({ onInvoiceSaved }) {
     return subtotal + tax;
   };
 
-  // تحديث خصم منتج معين
-  const handleDiscountChange = (productId, discountValue) => {
-    const discount = Math.max(0, parseFloat(discountValue) || 0);
-    setCartItems(cartItems.map(item =>
-      item.id === productId ? { ...item, itemDiscount: discount } : item
-    ));
+  const parseDiscountInput = (str) => {
+    const t = String(str ?? '').trim().replace(',', '.');
+    if (t === '') return { empty: true, num: 0 };
+    const num = parseFloat(t);
+    if (!Number.isFinite(num)) return { empty: false, num: NaN };
+    return { empty: false, num };
+  };
+
+  const revertDraftFromCart = (item) => {
+    const d = item.itemDiscount || 0;
+    setDiscountDrafts((prev) => ({ ...prev, [item.id]: d > 0 ? String(d) : '' }));
+  };
+
+  /** التحقق من كل المسودات وتطبيقها على العربة؛ false = رفض الإغلاق */
+  const validateAndCommitDiscountDrafts = () => {
+    const nextDiscounts = {};
+    for (const item of cartItems) {
+      const { empty, num } = parseDiscountInput(discountDrafts[item.id]);
+      const maxPu = getMaxDiscountPerUnit(item);
+      if (empty) {
+        nextDiscounts[item.id] = 0;
+        continue;
+      }
+      if (Number.isNaN(num)) {
+        showNotification('❌ أدخل قيمة خصم رقمية صحيحة', 'error');
+        return false;
+      }
+      if (num < 0) {
+        showNotification('❌ الخصم لا يمكن أن يكون سالباً', 'error');
+        return false;
+      }
+      if (num > maxPu + 1e-9) {
+        showNotification(
+          `❌ خصم «${item.name}» يتجاوز الحد المسموح (${formatNumber(maxPu)} ج.م للقطعة). الخصم لم يُطبَّق.`,
+          'error'
+        );
+        return false;
+      }
+      nextDiscounts[item.id] = num;
+    }
+    setCartItems((prev) =>
+      prev.map((i) => ({ ...i, itemDiscount: nextDiscounts[i.id] ?? 0 }))
+    );
+    return true;
+  };
+
+  const tryCloseDiscountModal = () => {
+    if (validateAndCommitDiscountDrafts()) {
+      setShowDiscountModal(false);
+    }
+  };
+
+  const handleDiscountDraftChange = (productId, value) => {
+    setDiscountDrafts((prev) => ({ ...prev, [productId]: value }));
+  };
+
+  /** عند مغادرة الحقل: تطبيق الخصم إن كان صالحاً، وإلا إشعار وإرجاع المسودة دون تغيير العربة */
+  const handleDiscountBlur = (item) => {
+    const { empty, num } = parseDiscountInput(discountDrafts[item.id]);
+    const maxPu = getMaxDiscountPerUnit(item);
+    if (empty) {
+      setCartItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, itemDiscount: 0 } : i))
+      );
+      setDiscountDrafts((prev) => ({ ...prev, [item.id]: '' }));
+      return;
+    }
+    if (Number.isNaN(num)) {
+      showNotification('❌ قيمة الخصم غير صالحة', 'error');
+      revertDraftFromCart(item);
+      return;
+    }
+    if (num < 0) {
+      showNotification('❌ الخصم لا يمكن أن يكون سالباً', 'error');
+      revertDraftFromCart(item);
+      return;
+    }
+    if (num > maxPu + 1e-9) {
+      showNotification(
+        `❌ الخصم يتجاوز الحد (${formatNumber(maxPu)} ج.م للقطعة). لم يُطبَّق.`,
+        'error'
+      );
+      revertDraftFromCart(item);
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, itemDiscount: num } : i))
+    );
+    setDiscountDrafts((prev) => ({ ...prev, [item.id]: num === 0 ? '' : String(num) }));
+  };
+
+  /** معاينة سعر القطعة من المسودة إن كانت رقماً صالحاً ضمن الحد، وإلا من العربة */
+  const getPreviewDiscountPerUnit = (item) => {
+    const maxPu = getMaxDiscountPerUnit(item);
+    const { empty, num } = parseDiscountInput(discountDrafts[item.id]);
+    if (empty) return item.itemDiscount || 0;
+    if (Number.isNaN(num) || num < 0 || num > maxPu + 1e-9) {
+      return item.itemDiscount || 0;
+    }
+    return num;
   };
 
   // حساب رقم الفاتورة التالي
@@ -255,6 +382,17 @@ export default function Cart({ onInvoiceSaved }) {
     if (paymentMethod === 'wallet' && !walletNumber.trim()) {
       showNotification('❌ يرجى إدخال رقم المحفظة', 'error');
       return;
+    }
+
+    for (const item of cartItems) {
+      const maxPu = getMaxDiscountPerUnit(item);
+      if ((item.itemDiscount || 0) > maxPu + 1e-9) {
+        showNotification(
+          '❌ خصم أحد الأصناف يتجاوز الحد المسموح (لا يمكن بيع الوحدة أقل من سعر الجملة)',
+          'error'
+        );
+        return;
+      }
     }
 
     setIsSaving(true);
@@ -584,7 +722,18 @@ export default function Cart({ onInvoiceSaved }) {
         {cartItems.length > 0 && (
           <button
             className={styles.discountBtn}
-            onClick={() => setShowDiscountModal(true)}
+            onClick={() => {
+              setCartItems((prev) =>
+                prev.map((item) => ({
+                  ...item,
+                  itemDiscount: Math.min(
+                    item.itemDiscount || 0,
+                    getMaxDiscountPerUnit(item)
+                  ),
+                }))
+              );
+              setShowDiscountModal(true);
+            }}
           >
             الخصم
           </button>
@@ -708,11 +857,11 @@ export default function Cart({ onInvoiceSaved }) {
 
       {/* Discount Modal */}
       {showDiscountModal && (
-        <div className={styles.discountModalOverlay} onClick={() => setShowDiscountModal(false)}>
+        <div className={styles.discountModalOverlay} onClick={tryCloseDiscountModal}>
           <div className={styles.discountModalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.discountModalHeader}>
               <h3 className={styles.discountModalTitle}>الخصومات</h3>
-              <button className={styles.discountModalCloseBtn} onClick={() => setShowDiscountModal(false)}>
+              <button type="button" className={styles.discountModalCloseBtn} onClick={tryCloseDiscountModal}>
                 ×
               </button>
             </div>
@@ -723,53 +872,74 @@ export default function Cart({ onInvoiceSaved }) {
                   <p>لا توجد منتجات في الفاتورة</p>
                 </div>
               ) : (
-                cartItems.map((item) => {
-                  const itemDiscount = item.itemDiscount || 0;
-                  const finalPrice = item.sellPrice - itemDiscount;
-                  const buyPrice = item.buyPrice || 0;
-                  const hasWarning = itemDiscount > 0 && finalPrice < buyPrice;
-                  
-                  return (
-                    <div key={item.id} className={styles.discountItemRow}>
-                      <div className={styles.discountItemInfo}>
-                        <h4 className={styles.discountItemName}>{item.name}</h4>
-                        <div className={styles.discountItemPrices}>
-                          <span className={styles.discountPriceLabel}>سعر البيع: {formatNumber(item.sellPrice)} ج.م</span>
-                          <span className={styles.discountPriceLabel}>سعر الجملة: {formatNumber(buyPrice)} ج.م</span>
-                        </div>
-                      </div>
-                      
-                      <div className={styles.discountInputSection}>
-                        <label className={styles.discountInputLabel}>الخصم (ج.م):</label>
-                        <input
-                          type="number"
-                          value={itemDiscount}
-                          onChange={(e) => handleDiscountChange(item.id, e.target.value)}
-                          className={styles.discountInput}
-                          min="0"
-                          step="0.01"
-                          max={item.sellPrice}
-                        />
-                        {hasWarning && (
-                          <div className={styles.discountWarning}>
-                            ⚠️ تحذير: السعر النهائي ({formatNumber(finalPrice)} ج.م) أقل من سعر الجملة ({formatNumber(buyPrice)} ج.م)
+                <>
+                  <div className={styles.discountInvoiceSummary}>
+                    <p className={styles.discountSummaryLine}>
+                      إجمالي البيع (قبل الخصم):{' '}
+                      <strong>{formatNumber(calculateGrossRetailSubtotal())} ج.م</strong>
+                    </p>
+                    <p className={styles.discountSummaryLine}>
+                      إجمالي سعر الجملة:{' '}
+                      <strong>{formatNumber(calculateWholesaleSubtotal())} ج.م</strong>
+                    </p>
+                    <p className={styles.discountSummaryLine}>
+                      أقصى خصم إجمالي مسموح:{' '}
+                      <strong>{formatNumber(calculateMaxAllowedTotalDiscount())} ج.م</strong>
+                    </p>
+                    <p className={styles.discountSummaryHint}>
+                      الخصم يُدخل للقطعة الواحدة؛ الحد الأقصى للقطعة = سعر البيع − سعر الجملة حتى يصبح الإجمالي بعد الخصم لا يقل عن إجمالي الجملة.
+                    </p>
+                  </div>
+                  {cartItems.map((item) => {
+                    const previewDiscount = getPreviewDiscountPerUnit(item);
+                    const finalPrice = item.sellPrice - previewDiscount;
+                    const buyPrice = item.buyPrice || 0;
+                    const maxPerUnit = getMaxDiscountPerUnit(item);
+                    const draftVal =
+                      Object.prototype.hasOwnProperty.call(discountDrafts, item.id) &&
+                      discountDrafts[item.id] !== undefined
+                        ? discountDrafts[item.id]
+                        : (item.itemDiscount || 0) > 0
+                          ? String(item.itemDiscount)
+                          : '';
+
+                    return (
+                      <div key={item.id} className={styles.discountItemRow}>
+                        <div className={styles.discountItemInfo}>
+                          <h4 className={styles.discountItemName}>{item.name}</h4>
+                          <div className={styles.discountItemPrices}>
+                            <span className={styles.discountPriceLabel}>سعر البيع: {formatNumber(item.sellPrice)} ج.م</span>
+                            <span className={styles.discountPriceLabel}>سعر الجملة: {formatNumber(buyPrice)} ج.م</span>
                           </div>
-                        )}
-                        <div className={styles.discountFinalPrice}>
-                          السعر النهائي: {formatNumber(finalPrice)} ج.م
+                        </div>
+
+                        <div className={styles.discountInputSection}>
+                          <label className={styles.discountInputLabel}>
+                            خصم القطعة (ج.م) — أقصى {formatNumber(maxPerUnit)}:
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
+                            placeholder=""
+                            value={draftVal}
+                            onChange={(e) => handleDiscountDraftChange(item.id, e.target.value)}
+                            onBlur={() => handleDiscountBlur(item)}
+                            className={styles.discountInput}
+                          />
+                          <div className={styles.discountFinalPrice}>
+                            سعر القطعة بعد الخصم: {formatNumber(finalPrice)} ج.م
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </>
               )}
             </div>
 
             <div className={styles.discountModalActions}>
-              <button
-                className={styles.discountCancelBtn}
-                onClick={() => setShowDiscountModal(false)}
-              >
+              <button type="button" className={styles.discountCancelBtn} onClick={tryCloseDiscountModal}>
                 إغلاق
               </button>
             </div>

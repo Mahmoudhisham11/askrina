@@ -124,6 +124,14 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shop]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !shop) return;
+    const onShiftClosed = () => fetchDailyStats();
+    window.addEventListener('shiftClosed', onShiftClosed);
+    return () => window.removeEventListener('shiftClosed', onShiftClosed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shop]);
+
   // دالة لتحديث الإحصائيات بعد حفظ فاتورة جديدة
   const handleInvoiceSaved = () => {
     fetchDailyStats();
